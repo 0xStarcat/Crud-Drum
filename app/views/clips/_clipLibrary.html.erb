@@ -1,0 +1,7 @@
+
+<% if current_user %>
+  <% @clips.each do |clip| %>
+    <button class = "load_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button>
+    <hr/>
+  <% end %>
+<% end %>

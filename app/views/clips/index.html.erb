@@ -1,0 +1,29 @@
+<% content_for :javascript_includes do %>
+  <%= javascript_include_tag "drum-machine/multi_clip.js" %>
+<% end %>
+
+
+<% if current_user %>
+<div style = "display:none" class = "user_id" user = <%=current_user.id %>></div>
+
+<div id="nav_container">
+  <%= render 'proto_nav' %>
+</div>
+<div id ="clip_container">
+  <%= render 'clip' %>
+</div>
+<div id ="song_container">
+
+</div>
+<div id="clip_library">
+  <%= render 'clipLibrary' %>
+</div>
+<div class = "column">
+  <a class ="button" id ="save_clip"><button>Save Clip</button></a>
+  <a class ="load_button" id ="load_clip"><button>Load Clip</button></a>
+</div>
+
+
+<% else %>
+<h1>Please sign in to load clips!</h1>
+<% end %>

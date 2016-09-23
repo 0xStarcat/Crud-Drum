@@ -1,0 +1,8 @@
+<%= render 'proto_nav' %>
+<% if current_user %>
+Welcome <%= current_user.name%>
+  <a href ="/signout">Log out!</a>
+<% else %>
+  <a href ="/auth/spotify">Spotify Login</a>
+  <a href ="/auth/twitter">Twitter Login</a>
+<% end %>

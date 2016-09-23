@@ -1,0 +1,65 @@
+// Place all the styles related to the clips controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+$nav-height: 80px;
+$library-width: 120px;
+#clip_library{
+  position: fixed;
+  top:$nav-height;
+  left:0;
+  width: $library-width;
+  height:100vh;
+  overflow-x:scroll;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(44,44,44,0.4);
+}
+
+#clip_container{
+  position: fixed;
+  top: $nav-height;
+  left: $library-width;
+  width: 100%;
+  height: 50vh;
+
+
+}
+
+#nav_container{
+  position: fixed;
+  top:0;
+  left:0;
+  width: 100vw;
+  height: $nav-height;
+  background-color: rgba(44,44,44,0.8);
+  text-align: center;
+
+}
+
+#song_container{
+  position: fixed;
+  bottom: 0;
+  left: $library-width;
+  right: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(44,44,44,0.1);
+  overflow: scroll;
+}
+
+.song_clip{
+  height: 286px;
+  width: 637px;
+  border: 1px solid black;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+#nav_container > a {
+  color: white;
+}
+
+
