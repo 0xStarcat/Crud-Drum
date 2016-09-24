@@ -12,124 +12,118 @@ $(document).ready(function()
 
 
 
-  function Pattern(){
-    var this_pattern = this;
-    this.id = makeId();
-    this.pattern = []
-    this.data = {
-      // `step` represents the current step (or beat) of the loop.
-      step: 0,
+function Pattern(clip_number, width){
 
-      // `tracks` holds the six tracks of the drum machine.  Each track
-      // has a sound and sixteen steps (or beats).
-      tracks: [createTrack("gold", note(audio, 880)),
-               createTrack("gold", note(audio, 659)),
-               createTrack("gold", note(audio, 587)),
-               createTrack("gold", note(audio, 523)),
-               createTrack("gold", note(audio, 440)),
-               createTrack("dodgerblue", kick(audio))]
-    };
-    this.setupButtonClicking = function() {
+  var self = this;
+  this.id = makeId();
+  this.clip_number = clip_number;
+  this.width = width;
+  this.pattern = []
+  this.data = {
+    // `step` represents the current step (or beat) of the loop.
+    step: 0,
 
-    // Every time the user clicks on the canvas...
-    document.querySelector("#"+this_pattern.id).addEventListener("click", function(e) {
+    // `tracks` holds the six tracks of the drum machine.  Each track
+    // has a sound and sixteen steps (or beats).
+    tracks: [createTrack("gold", note(audio, 880)),
+             createTrack("gold", note(audio, 659)),
+             createTrack("gold", note(audio, 587)),
+             createTrack("gold", note(audio, 523)),
+             createTrack("gold", note(audio, 440)),
+             createTrack("dodgerblue", kick(audio))]
+  };
+  this.setupButtonClicking = function() {
 
-      // ...Get the coordinates of the mouse pointer relative to the
-      // canvas...
-      var p = { x: e.offsetX, y: e.offsetY };
+  // Every time the user clicks on the canvas...
+  document.querySelector("#"+self.id).addEventListener("click", function(e) {
 
-      // ...Go through every track...
-      this_pattern.data.tracks.forEach(function(track, row) {
+    // ...Get the coordinates of the mouse pointer relative to the
+    // canvas...
+    var p = { x: e.offsetX, y: e.offsetY };
 
-        // ...Go through every button in this track...
-        track.steps.forEach(function(on, column) {
+    // ...Go through every track...
+    self.data.tracks.forEach(function(track, row) {
 
-          // ...If the mouse pointer was inside this button...
-          if (isPointInButton(p, column, row)) {
+      // ...Go through every button in this track...
+      track.steps.forEach(function(on, column) {
 
-            // ...Switch it off if it was on or on if it was off.
-            track.steps[column] = !on;
-            if (track.steps[column])
-            {
-              this_pattern.pattern.push({step: column, track: row})
-            }
-            else
-            {
-              var remove_index = this_pattern.pattern.indexOf({column, row})
-              this_pattern.pattern.splice (remove_index, 1)
-            }
-            console.log(this_pattern.pattern)
+        // ...If the mouse pointer was inside this button...
+        if (isPointInButton(p, column, row, self.BUTTON_SIZE)) {
+          console.log(self.BUTTON_SIZE)
+          // ...Switch it off if it was on or on if it was off.
+          track.steps[column] = !on;
 
+          if (track.steps[column])
+          {
+            self.pattern.push({step: column, track: row})
           }
-        });
+          else
+          {
+            var remove_index = self.pattern.indexOf({column, row})
+            self.pattern.splice (remove_index, 1)
+          }
+        }
       });
     });
+  });
+};
+  this.draw = function() {
+
+    // Clear away the previous drawing.
+    self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
+
+    // Draw all the tracks.
+    drawTracks(self.screen, self.data, self.BUTTON_SIZE)
+
+    // Draw the pink square that indicates the current step (beat).
+    drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
+
+    // Ask the browser to call `draw()` again in the near future.
+    requestAnimationFrame(self.draw);
   };
-    this.draw = function() {
 
-      // Clear away the previous drawing.
-      this_pattern.screen.clearRect(0, 0, this_pattern.screen.canvas.width, this_pattern.screen.canvas.height);
-
-      // Draw all the tracks.
-      drawTracks(this_pattern.screen, this_pattern.data)
-
-      // Draw the pink square that indicates the current step (beat).
-      drawButton(this_pattern.screen, this_pattern.data.step, this_pattern.data.tracks.length, "deeppink");
-
-      // Ask the browser to call `draw()` again in the near future.
-      requestAnimationFrame(this_pattern.draw);
-    };
-
-    (this.setUp = function()
-    {
-      var screen_id = $('<canvas id='+this_pattern.id+' width="637px" height="286px"></canvas>');//document.querySelector("#screen")
-      $('#song_container').append(screen_id);
-      this_pattern.screen = document.querySelector('#'+this_pattern.id).getContext("2d");
-      this_pattern.setupButtonClicking();
-
-      console.log('hey!')
-
-      this_pattern.draw();
-    })()
-  }
-
-  var audio = new AudioContext();
-
-  // Create the data for the drum machine.
-
-  var setUp = function()
+  (this.setUp = function(width)
   {
+    var screen_id = $('<canvas id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
+    $('#song_container').append(screen_id);
+    self.screen = document.querySelector('#'+self.id).getContext("2d");
+    self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
+    self.setupButtonClicking();
 
-    current_pattern = new Pattern();
+    self.draw();
+  })(width)
+}
 
-  }
+var audio = new AudioContext();
 
-  function loadPattern(pattern)
+// Create the data for the drum machine.
+
+function loadPattern(pattern)
+{
+  var load_data = JSON.parse(pattern.coords);
+  console.log("PATTERN", pattern)
+  clearKit();
+  current_pattern.pattern = [];
+  //row = data.tracks
+  //column = data.tracks[i].steps
+  load_data.forEach(function(block)
   {
-    var load_data = JSON.parse(pattern.coords);
-    console.log("PATTERN", pattern)
-    clearKit();
-    current_pattern.pattern = [];
-    //row = data.tracks
-    //column = data.tracks[i].steps
-    load_data.forEach(function(block)
-    {
-      //console.log(block);
-      current_pattern.data.tracks[block["track"]].steps[block["step"]] = true;
-      current_pattern.pattern.push({step: block["step"], track: block["track"]})
-    })
-  }
+    //console.log(block);
+    current_pattern.data.tracks[block["track"]].steps[block["step"]] = true;
+    current_pattern.pattern.push({step: block["step"], track: block["track"]})
+  })
+}
 
-  function clearKit()
+function clearKit()
+{
+  for (var i = 0; i < current_pattern.data.tracks.length; i++)
   {
-    for (var i = 0; i < current_pattern.data.tracks.length; i++)
+    for (var j = 0; j < current_pattern.data.tracks[i].steps.length; j++)
     {
-      for (var j = 0; j < current_pattern.data.tracks[i].steps.length; j++)
-      {
-        current_pattern.data.tracks[i].steps[j] = false;
-      }
+      current_pattern.data.tracks[i].steps[j] = false;
     }
   }
+}
   // Update
   // ------
 
@@ -282,11 +276,11 @@ $(document).ready(function()
     return { steps: steps, color: color, playSound: playSound };
   };
 
-  var BUTTON_SIZE = 26;
+
 
   // **buttonPosition()** returns the pixel coordinates of the button at
   // `column` and `row`.
-  function buttonPosition(column, row) {
+  function buttonPosition(column, row, BUTTON_SIZE) {
     return {
       x: BUTTON_SIZE / 2 + column * BUTTON_SIZE * 1.5,
       y: BUTTON_SIZE / 2 + row * BUTTON_SIZE * 1.5
@@ -294,29 +288,30 @@ $(document).ready(function()
   };
 
   // **drawButton()** draws a button in `color` at `column` and `row`.
-  function drawButton(screen, column, row, color) {
-    var position = buttonPosition(column, row);
+  function drawButton(screen, column, row, color, BUTTON_SIZE) {
+    var position = buttonPosition(column, row, BUTTON_SIZE);
     screen.fillStyle = color;
     screen.fillRect(position.x, position.y, BUTTON_SIZE, BUTTON_SIZE);
   };
 
   // **drawTracks()** draws the tracks in the drum machine.
-  function drawTracks(screen, data) {
+  function drawTracks(screen, data, BUTTON_SIZE) {
 
     data.tracks.forEach(function(track, row) {
       track.steps.forEach(function(on, column) {
         drawButton(screen,
                    column,
                    row,
-                   on ? track.color : "lightgray");
+                   on ? track.color : "lightgray",
+                   BUTTON_SIZE);
       });
     });
   };
 
   // **isPointInButton()** returns true if `p`, the coordinates of a
   // mouse click, are inside the button at `column` and `row`.
-  function isPointInButton(p, column, row) {
-    var b = buttonPosition(column, row);
+  function isPointInButton(p, column, row, BUTTON_SIZE) {
+    var b = buttonPosition(column, row, BUTTON_SIZE);
     return !(p.x < b.x ||
              p.y < b.y ||
              p.x > b.x + BUTTON_SIZE ||

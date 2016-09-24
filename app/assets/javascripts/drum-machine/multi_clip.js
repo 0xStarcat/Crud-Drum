@@ -1,11 +1,13 @@
 var song;
 $(document).ready(function(){
   song = new Song();
-  addClip();
-  addClip();
-  addClip();
-  addClip();
-  addClip();
+  var small_screen = 300;
+  var large_screen = 687;
+  addClip(1, small_screen);
+  addClip(2, small_screen);
+  addClip(3, small_screen);
+  addClip(4, small_screen);
+  addClip(5, small_screen);
 })
 
 function Song()
@@ -40,9 +42,9 @@ function Song()
   }, 100);
 };
 
-function addClip(clip_number)
+function addClip(clip_number, width)
 {
-  var new_clip = new Pattern(clip_number)
+  var new_clip = new Pattern(clip_number, width)
   song.clips.push(new_clip)
   song.track_length+=16;
 }
