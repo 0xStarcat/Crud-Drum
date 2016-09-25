@@ -1,5 +1,6 @@
 var clips_listeners;
 var library_listeners;
+var canvas_listeners;
 $(document).ready(function()
 {
 
@@ -16,24 +17,46 @@ function Clips_Listeners()
   $(window).on('mouseup', toggle_mouse);
   this.save_clip_button = $('#save_clip');
   this.save_clip_button.on('click', save_clip);
-  this.playback_button = $('#playback_button');
+  this.playback_button = $('.playback_button');
   this.playback_button.on('click', song_stop);
-  this.switch_view = $('#switch_button');
+  this.switch_view = $('.switch_button');
   this.switch_view.on('click', toggle_view);
-  this.add_clip_button = $('#add_clip_button');
-  this.add_clip_button.on('click', insert_segment);
+  this.add_segment_button = $('#add_segment_button');
+  this.add_segment_button.on('click', insert_segment);
   this.save_song_button = $('#save_song');
   this.save_song_button.on('click', save_song);
   $('#load_song').on('click', load_song);
   this.new_song_button = $('#new_song');
   this.new_song_button.on('click', clear_song);
+  this.mount;
+  this.mount_listener;
+  this.mount_target;
+  this.mount_destination;
 };
+
+function Canvas_Listeners()
+{
+  $('.song_canvas').on('dblclick', add_dblclick);
+}
+
+function add_dblclick(e)
+{
+  var id = $(e.target).attr('id');
+  console.log(id)
+  expand_clip($(e.target));
+}
 
 function Library_Listeners()
 {
   $('.load_clip_button').each(function(button)
     {
-      $(this).on('click', load_clip);
+        $(this).on('mousedown', prime_cursor)
+        $(this).on('mouseup', function(e)
+        {
+          var clip = e.target.getAttribute('clip');
+          load_clip(e, clip, clip_editor);
+          $(e.target).off('mouseout', mount_cursor);
+        })
     });
   $('.load_song_button').each(function(button)
     {
@@ -56,11 +79,10 @@ var save_clip = function()
   }
 };
 
-var load_clip = function(e)
+var load_clip = function(e, clip, canvas)
 {
 
-  var id = e.target.getAttribute('clip');
-  var canvas = clip_editor;
+  var id = clip;
   console.log("get clip id:", id)
   ajax_this('/clip_req', 'GET', {id: id}, success, error_function)
   function success(data)
@@ -140,6 +162,7 @@ var insert_segment = function(e)
   var large_screen = 687;
   addClip(small_screen);
 
+
 }
 
 function addClip(width)
@@ -151,6 +174,8 @@ function addClip(width)
     var new_clip = new Pattern(width, i)
     segment.push(new_clip);
   }
+  $('.song_canvas').off('dblclick', add_dblclick);
+  canvas_listeners = Canvas_Listeners()
   song.clips.push(segment)
   song.track_length+=16;
 }
@@ -202,8 +227,95 @@ var load_song = function(e)
   {
     console.log("SONG LOADED", data);
 
-    var load_song = JSON.parse(data.data);
+    var load_song = JSON.parse(data.song_data);
     render_song(load_song);
   }
 }
 
+var prime_cursor = function(e)
+{
+  $(e.target).on('mouseout', mount_cursor);
+}
+
+var mount_cursor = function(e)
+  {
+    $('body').css({'opacity': '0.6'})
+    $('canvas').off('mouseup', unmount_cursor);
+    $('canvas').on('mouseup', unmount_cursor);
+    var id = $(e.target).attr('clip');
+    clips_listeners.mount = id;
+    add_hover_class();
+    $(e.target).off('mouseout', mount_cursor);
+  }
+
+var unmount_cursor = function(e)
+{
+
+  clips_listeners.mount_target = e.target.getAttribute('id');
+  if (clips_listeners.mount_target == clip_editor.id)
+  {
+    var clip = clip_editor
+
+  } else {
+    find_mount_destination()
+    var clip = clips_listeners.mount_destination;
+  }
+  load_clip(e, clips_listeners.mount, clip)
+  clips_listeners.mount = undefined;
+  clips_listeners.mount_target = undefined;
+  clips_listeners.mount_destination = undefined;
+  $('canvas').off('mouseup', unmount_cursor);
+  $('body').css({'opacity': '1'})
+  remove_hover_class();
+}
+
+var on_song_screen = function()
+{
+  return ($('#song_display').is(':visible'))
+}
+
+var find_mount_destination = function()
+{
+
+  var target = clips_listeners.mount_target;
+  song.clips.forEach(function(clip)
+  {
+    clip.forEach(function(pattern)
+    {
+      if (pattern.id == target)
+      {
+        clips_listeners.mount_destination = pattern;
+      }
+    })
+
+  });
+}
+
+function add_hover_class()
+{
+  $('.song_canvas').each(function(canvas)
+    {
+      $(this).on('mouseover', onHover);
+      $(this).on('mouseout', offHover);
+    });
+}
+
+function remove_hover_class()
+{
+  $('.song_canvas').each(function(canvas)
+    {
+      $(this).removeClass('hover');
+      $(this).off('mouseover', onHover);
+      $(this).off('mouseout', offHover);
+    });
+}
+
+var onHover = function()
+{
+  $(this).addClass('hover');
+}
+
+var offHover = function()
+{
+  $(this).removeClass('hover');
+}

@@ -38,7 +38,7 @@ function Pattern(width, track_number){
   document.querySelector("#"+self.id).addEventListener("mousemove", function(e) {
     // ...Get the coordinates of the mouse pointer relative to the
     // canvas...
-    if (clips_listeners.mouse_down)
+    if (clips_listeners.mouse_down && clips_listeners.mount == undefined)
     {
       var p = { x: e.offsetX, y: e.offsetY };
 
@@ -124,15 +124,13 @@ function Pattern(width, track_number){
 
     var segment_id = (track_number >= 0) ? (song.clips.length) : "editor";
     var clip_id = (track_number >= 0) ? track_number : "editor";
-    var screen_container = $('<div><label for='+self.id+'>'+(song.clips.length+1)+'</label></div>')
-    $('#track_'+track_number+'_container').append(screen_container);
+    //var screen_container = $('<div><label for='+self.id+'>'+(song.clips.length+1)+'</label></div>')
+    //$('#track_'+track_number+'_container').append(screen_container);
     var screen_id = $('<canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
-    $(screen_container).append(screen_id);
-    if (track_number >= 0)
+    $('#track_'+track_number+'_container').append(screen_id);
+    //$(screen_container).append(screen_id);
+    if (track_number < 0)
     {
-      var open_button = $('<button class="expand_clip_button" onClick="expand_clip('+self.id+')">Expand</button>');//document.querySelector("#screen")
-      $(screen_container).append(open_button);
-    } else {
       screen_id.removeClass('song_canvas');
     }
     self.screen = document.querySelector('#'+self.id).getContext("2d");
@@ -147,32 +145,32 @@ var audio = new AudioContext();
 
 // Create the data for the drum machine.
 
-function loadPattern(pattern, canvas)
+function loadPattern(pattern, clip)
 {
   console.log("PATTERN", pattern)
-  clearKit(canvas);
-  canvas.pattern = [];
+  clearKit(clip);
+
   //row = data.tracks
   //column = data.tracks[i].steps
   pattern.forEach(function(block)
   {
 
     //console.log(block);
-    canvas.data.tracks[block["track"]].steps[block["step"]] = true;
-    canvas.pattern.push({step: block["step"], track: block["track"]})
+    clip.data.tracks[block["track"]].steps[block["step"]] = true;
+    clip.pattern.push({step: block["step"], track: block["track"]})
 
   })
 
 }
 
-function clearKit(canvas)
+function clearKit(clip)
 {
-
-  for (var i = 0; i < canvas.data.tracks.length; i++)
+  clip.pattern = [];
+  for (var i = 0; i < clip.data.tracks.length; i++)
   {
-    for (var j = 0; j < canvas.data.tracks[i].steps.length; j++)
+    for (var j = 0; j < clip.data.tracks[i].steps.length; j++)
     {
-      canvas.data.tracks[i].steps[j] = false;
+      clip.data.tracks[i].steps[j] = false;
     }
   }
 }
@@ -351,11 +349,20 @@ function clearKit(canvas)
 
     data.tracks.forEach(function(track, row) {
       track.steps.forEach(function(on, column) {
-        drawButton(screen,
-                   column,
-                   row,
-                   on ? track.color : "lightgray",
-                   BUTTON_SIZE);
+        if (column == 0 || column % 4 == 0)
+        {
+          drawButton(screen,
+                     column,
+                     row,
+                     on ? track.color : 'rgba(235,185,185,1)',
+                     BUTTON_SIZE);
+        } else {
+          drawButton(screen,
+                     column,
+                     row,
+                     on ? track.color : 'rgba(205,205,205,1)',
+                     BUTTON_SIZE);
+        }
       });
     });
   };

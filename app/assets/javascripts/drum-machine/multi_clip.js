@@ -2,7 +2,7 @@ var song;
 var clip_editor;
 $(document).ready(function(){
   song = new Song();
-
+  insert_segment();
   var small_screen = 300;
   var large_screen = 687;
   clip_editor = new Pattern(large_screen, -1)
@@ -19,7 +19,6 @@ function Song()
   this.editing = false;
   this.editing_segment = 0;
   this.editing_clip = 0;
-  this.temp;
   this.track = function()
   {
 
