@@ -1,21 +1,27 @@
 <% if current_user %>
 <div style = "display:none" class = "user_id" user = <%=current_user.id %>></div>
-
 <div id="nav_container">
   <%= render 'proto_nav' %>
 </div>
 <div id ="clip_container">
+
   <%= render 'clip' %>
 </div>
-<div id ="song_display">
+<div id ="song_display" style="display:none">
   <%= render 'songContainer' %>
 </div>
 <div id="clip_library">
   <%= render 'clipLibrary' %>
 </div>
-<div class = "column">
+<div class = "column" id = "right_column">
+  <button id = "switch_button">Switch View</button>
+  <button id = "playback_button">Stop</button>
   <a class ="button" id ="save_clip"><button>Save Clip</button></a>
   <a class ="load_button" id ="load_clip"><button>Load Clip</button></a>
+  <button id = "add_clip_button">Add Clip</button>
+  <button id ="save_song">Save Song</button>
+  <button id ="load_song">Load Song</button>
+  <button id ="new_song">New Song</button>
 </div>
 
 

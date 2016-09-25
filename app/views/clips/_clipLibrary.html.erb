@@ -1,7 +1,13 @@
 
 <% if current_user %>
+  <h2>Clips</h2>
   <% @clips.each do |clip| %>
-    <button class = "load_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button>
+    <button class = "load_clip_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button>
+    <hr/>
+  <% end %>
+  <h2>Songs</h2>
+   <% @songs.each do |song| %>
+    <button class = "load_song_button" song =<%=song.id%>>Load Song <%=song.id%></button>
     <hr/>
   <% end %>
 <% end %>

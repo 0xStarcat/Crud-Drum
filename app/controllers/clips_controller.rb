@@ -4,7 +4,7 @@ class ClipsController < ApplicationController
 
     if current_user
       @clips = Clip.where(user_id: current_user.id)
-
+      @songs = Song.where(user_id: current_user.id)
     end
     render :index
   end
@@ -29,6 +29,7 @@ class ClipsController < ApplicationController
     # end
     if current_user
       @clips = Clip.where(user_id: current_user.id)
+      @songs = Song.where(user_id: current_user.id)
       respond_to do |format|
       format.js
       end
@@ -51,15 +52,15 @@ class ClipsController < ApplicationController
   def load_clip
 
 
-    user_id = params["id"]
+    clip_id = params["id"]
 
     respond_to do |format|
-    return_clip = Clip.find(user_id)
-    format.json  { render :json => return_clip } # don't do msg.to_json
+    return_clip = Clip.find(clip_id)
+    format.json  { render :json => return_clip }
     end
 
   end
-
+  private
   def clip_params params
 
     params = ActionController::Parameters.new({

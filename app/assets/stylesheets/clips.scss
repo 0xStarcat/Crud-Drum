@@ -2,7 +2,16 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 $nav-height: 80px;
-$library-width: 120px;
+$library-width: 160px;
+
+canvas{
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;          /* Likely future */
+
+}
+
 #clip_library{
   position: fixed;
   top:$nav-height;
@@ -38,16 +47,48 @@ $library-width: 120px;
 
 }
 
-#song_container{
+#song_display{
+  height: 650px;
+  display: flex;
   position: fixed;
   bottom: 0;
   left: $library-width;
   right: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(44,44,44,0.1);
+  overflow: scroll;
+}
+
+.song_container{
+
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: row;
-  background-color: rgba(44,44,44,0.1);
-  overflow: scroll;
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  border-radius: 4px;
+
+}
+
+.song_canvas{
+  box-sizing: border-box;
+  border: 2px solid transparent;
+}
+
+.song_canvas:hover{
+  border: 2px solid black;
+}
+
+.track_type{
+  height: 150px;
+  width: 75px;
+  display:flex;
+  flex-direciton: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .song_clip{
@@ -55,11 +96,32 @@ $library-width: 120px;
   width: 637px;
   border: 1px solid black;
   border-radius: 4px;
-  display: inline-block;
+  display: block;
+}
+
+#clip_container{
+  position: relative;
+  left: $library-width;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
 }
 
 #nav_container > a {
   color: white;
+}
+
+#right_column{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: $nav-height;
+  right:0;
+  color: white;
+  background: rgba(44,44,44,0.4);
 }
 
 

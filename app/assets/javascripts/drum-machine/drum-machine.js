@@ -12,13 +12,13 @@ $(document).ready(function()
 
 
 
-function Pattern(clip_number, width){
+function Pattern(width, track_number){
 
   var self = this;
   this.id = makeId();
-  this.clip_number = clip_number;
   this.width = width;
   this.pattern = []
+  this.is_playing = true;
   this.data = {
     // `step` represents the current step (or beat) of the loop.
     step: 0,
@@ -35,36 +35,73 @@ function Pattern(clip_number, width){
   this.setupButtonClicking = function() {
 
   // Every time the user clicks on the canvas...
-  document.querySelector("#"+self.id).addEventListener("click", function(e) {
-
+  document.querySelector("#"+self.id).addEventListener("mousemove", function(e) {
     // ...Get the coordinates of the mouse pointer relative to the
     // canvas...
-    var p = { x: e.offsetX, y: e.offsetY };
+    if (clips_listeners.mouse_down)
+    {
+      var p = { x: e.offsetX, y: e.offsetY };
 
-    // ...Go through every track...
-    self.data.tracks.forEach(function(track, row) {
+      // ...Go through every track...
+      self.data.tracks.forEach(function(track, row) {
 
-      // ...Go through every button in this track...
-      track.steps.forEach(function(on, column) {
+        // ...Go through every button in this track...
+        track.steps.forEach(function(on, column) {
 
-        // ...If the mouse pointer was inside this button...
-        if (isPointInButton(p, column, row, self.BUTTON_SIZE)) {
-          console.log(self.BUTTON_SIZE)
-          // ...Switch it off if it was on or on if it was off.
-          track.steps[column] = !on;
-
-          if (track.steps[column])
-          {
-            self.pattern.push({step: column, track: row})
+          // ...If the mouse pointer was inside this button...
+          if (isPointInButton(p, column, row, self.BUTTON_SIZE)) {
+            // ...Switch it off if it was on or on if it was off.
+            if (track.steps[column] == false)
+            {
+              track.steps[column] = !on;
+            }
+            if (track.steps[column])
+            {
+              self.pattern.push({step: column, track: row})
+              console.log('hi')
+            }
+            else
+            {
+              var remove_index = self.pattern.indexOf({column, row})
+              self.pattern.splice (remove_index, 1)
+            }
           }
-          else
-          {
-            var remove_index = self.pattern.indexOf({column, row})
-            self.pattern.splice (remove_index, 1)
-          }
-        }
+        });
       });
-    });
+    }
+  });
+  document.querySelector("#"+self.id).addEventListener("click", function(e) {
+    // ...Get the coordinates of the mouse pointer relative to the
+    // canvas...
+
+      var p = { x: e.offsetX, y: e.offsetY };
+
+      // ...Go through every track...
+      self.data.tracks.forEach(function(track, row) {
+
+        // ...Go through every button in this track...
+        track.steps.forEach(function(on, column) {
+
+          // ...If the mouse pointer was inside this button...
+          if (isPointInButton(p, column, row, self.BUTTON_SIZE)) {
+            console.log(self.BUTTON_SIZE)
+            // ...Switch it off if it was on or on if it was off.
+
+              track.steps[column] = !on;
+
+            if (track.steps[column])
+            {
+              self.pattern.push({step: column, track: row})
+            }
+            else
+            {
+              var remove_index = self.pattern.indexOf({column, row})
+              self.pattern.splice (remove_index, 1)
+            }
+          }
+        });
+      });
+
   });
 };
   this.draw = function() {
@@ -82,45 +119,60 @@ function Pattern(clip_number, width){
     requestAnimationFrame(self.draw);
   };
 
-  (this.setUp = function(width)
+  (this.setUp = function(width, track_number)
   {
-    var screen_id = $('<canvas id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
-    $('#song_container').append(screen_id);
+
+    var segment_id = (track_number >= 0) ? (song.clips.length) : "editor";
+    var clip_id = (track_number >= 0) ? track_number : "editor";
+    var screen_container = $('<div><label for='+self.id+'>'+(song.clips.length+1)+'</label></div>')
+    $('#track_'+track_number+'_container').append(screen_container);
+    var screen_id = $('<canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
+    $(screen_container).append(screen_id);
+    if (track_number >= 0)
+    {
+      var open_button = $('<button class="expand_clip_button" onClick="expand_clip('+self.id+')">Expand</button>');//document.querySelector("#screen")
+      $(screen_container).append(open_button);
+    } else {
+      screen_id.removeClass('song_canvas');
+    }
     self.screen = document.querySelector('#'+self.id).getContext("2d");
     self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
     self.setupButtonClicking();
 
     self.draw();
-  })(width)
+  })(width, track_number)
 }
 
 var audio = new AudioContext();
 
 // Create the data for the drum machine.
 
-function loadPattern(pattern)
+function loadPattern(pattern, canvas)
 {
-  var load_data = JSON.parse(pattern.coords);
   console.log("PATTERN", pattern)
-  clearKit();
-  current_pattern.pattern = [];
+  clearKit(canvas);
+  canvas.pattern = [];
   //row = data.tracks
   //column = data.tracks[i].steps
-  load_data.forEach(function(block)
+  pattern.forEach(function(block)
   {
+
     //console.log(block);
-    current_pattern.data.tracks[block["track"]].steps[block["step"]] = true;
-    current_pattern.pattern.push({step: block["step"], track: block["track"]})
+    canvas.data.tracks[block["track"]].steps[block["step"]] = true;
+    canvas.pattern.push({step: block["step"], track: block["track"]})
+
   })
+
 }
 
-function clearKit()
+function clearKit(canvas)
 {
-  for (var i = 0; i < current_pattern.data.tracks.length; i++)
+
+  for (var i = 0; i < canvas.data.tracks.length; i++)
   {
-    for (var j = 0; j < current_pattern.data.tracks[i].steps.length; j++)
+    for (var j = 0; j < canvas.data.tracks[i].steps.length; j++)
     {
-      current_pattern.data.tracks[i].steps[j] = false;
+      canvas.data.tracks[i].steps[j] = false;
     }
   }
 }
