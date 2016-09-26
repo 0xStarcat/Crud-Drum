@@ -50,16 +50,8 @@ function Pattern(width, track_number, instrument){
             if (track.steps[column] == false)
             {
               track.steps[column] = !on;
-              console.log(track.steps[column])
-            }
-            if (track.steps[column])
-            {
               self.pattern.push({step: column, track: row})
-            }
-            else
-            {
-              var remove_index = self.pattern.indexOf({column, row})
-              self.pattern.splice (remove_index, 1)
+              console.log(track.steps[column])
             }
           }
         });
@@ -80,18 +72,24 @@ function Pattern(width, track_number, instrument){
 
           // ...If the mouse pointer was inside this button...
           if (isPointInButton(p, column, row, self.BUTTON_SIZE)) {
-            console.log(self.BUTTON_SIZE)
+
             // ...Switch it off if it was on or on if it was off.
 
               track.steps[column] = !on;
 
             if (track.steps[column])
             {
-              self.pattern.push({step: column, track: row})
+              var check = {"column": column, "row": row};
+              if (self.pattern.includes(check) == false)
+              {
+
+                self.pattern.push({step: column, track: row})
+                console.log(self.pattern.includes(check))
+              }
             }
             else
             {
-              var remove_index = self.pattern.indexOf({column, row})
+              var remove_index = self.pattern.indexOf({"column": column, "row": row})
               self.pattern.splice (remove_index, 1)
             }
           }
@@ -253,7 +251,6 @@ function loadPattern(pattern, clip)
   pattern.forEach(function(block)
   {
 
-    //console.log(block);
     clip.data.tracks[block["track"]].steps[block["step"]] = true;
     clip.pattern.push({step: block["step"], track: block["track"]})
 
@@ -263,7 +260,6 @@ function loadPattern(pattern, clip)
 
 function clearKit(clip)
 {
-  console.log("clearing", clip)
   clip.pattern = [];
   for (var i = 0; i < clip.data.tracks.length; i++)
   {

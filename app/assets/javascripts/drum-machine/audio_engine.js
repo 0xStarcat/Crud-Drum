@@ -42,7 +42,6 @@ var source = audio.createBufferSource();
      var audioData = sample;
      var source = audio.createBufferSource();
       audio.decodeAudioData(audioData, function(buffer) {
-        console.log(audioData)
           source.buffer = buffer;
           source.connect(audio.destination);
           //b.source.connect(audio.destination);

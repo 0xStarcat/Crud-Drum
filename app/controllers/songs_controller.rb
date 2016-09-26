@@ -15,7 +15,6 @@ class SongsController < ApplicationController
       format.js
       end
     end
-
   end
 
   def load_song
