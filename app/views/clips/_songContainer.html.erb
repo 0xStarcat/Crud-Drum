@@ -1,27 +1,30 @@
 <% content_for :javascript_includes do %>
   <%= javascript_include_tag "drum-machine/multi_clip.js" %>
+  <%= javascript_include_tag "drum-machine/audio_engine.js" %>
+
 <% end %>
-<div id = "song_control_row">
+<div id = "tracking_container">
 
 </div>
-<canvas id = "tracking"></canvas>
-<div class = "song_container" id = "track_0_container">
-  <div class ="track_type">
-    Synth
+<div id ="song_display">
+  <div class = "track_type_containter" >
+    <div class ="track_type">
+      Synth
+    </div>
+    <div class ="track_type">
+      Synth
+    </div>
+    <div class ="track_type">
+      Synth
+    </div>
+     <div class ="track_type">
+      Drums
+    </div>
   </div>
-</div>
-<div class = "song_container" id = "track_1_container">
-  <div class ="track_type">
-    Synth
-  </div>
-</div>
-<div class = "song_container" id = "track_2_container">
-  <div class ="track_type">
-    Synth
-  </div>
-</div>
-<div class = "song_container" id = "track_3_container">
-  <div class ="track_type">
-    Drums
+  <div id = "song_wrapper">
+    <div class = "canvas_container" id = "track_0_container"></div>
+    <div class = "canvas_container" id = "track_1_container" ></div>
+    <div class = "canvas_container" id = "track_2_container"></div>
+    <div class = "canvas_container" id = "track_3_container"></div>
   </div>
 </div>

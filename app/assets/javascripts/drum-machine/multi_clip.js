@@ -1,18 +1,20 @@
 var song;
 var clip_editor;
+var b;
 $(document).ready(function(){
-  song = new Song();
-  insert_segment();
-  var small_screen = 300;
-  var large_screen = 687;
-  clip_editor = new Pattern(large_screen, -1)
+
+  b = new Buffer();
+  load_samples(b.index);
+
 
 })
+
 
 function Song()
 {
   self = this;
   this.clips = [];
+  this.tracker_segments = [];
   this.current_segment = 0;
   this.track_length = 0;
   this.isPlaying = true;
@@ -22,24 +24,29 @@ function Song()
   this.track = function()
   {
 
-    //Handle tracking for editor pattern
-
     //Handle tracking for entire song
-    if (self.clips.length > 0 )
+    if (self.tracker_segments.length > 0 )
     {
       // Increase `data.step` by one for current clip.  If `data.step` is `15` (the last
       // step), move to next clip reset step value to 0
+        self.tracker_segments[self.current_segment].data.step = (self.tracker_segments[self.current_segment].data.step + 1);
+        self.clips[self.current_segment].forEach(function(segment)
+          {
+            //Move the tracker to right
+            segment.data.step = (segment.data.step + 1)
+          });
 
-      self.clips[self.current_segment].forEach(function(segment)
-        {
-          segment.data.step = (segment.data.step + 1)
-       });
-      if (self.clips[self.current_segment][0].data.step == self.clips[self.current_segment][0].data.tracks[0].steps.length)
+      if (self.tracker_segments[self.current_segment].data.step == 16)
       {
+
         self.clips[self.current_segment].forEach(function(segment)
         {
+          //Move the reset tracker position to 0
           segment.data.step = 0;
+
         });
+        self.tracker_segments[self.current_segment].data.step = 0;
+        //change which canvas is rendering
         self.current_segment = (self.current_segment + 1) % self.clips.length;
       }
 
@@ -62,13 +69,19 @@ function Song()
       .filter(function(track) {  return track.steps[clip_editor.data.step]; })
       .forEach(function(track)
         {
+
           track.playSound();
         });
   }
   //move these trackers to the pattern
   //and clear the trackers in the stop function
-  this.pattern_tracker = setInterval(this.track, 100);
-  this.editor_tracker = setInterval(this.editor_track, 100);
+  if ($('#s_d').is(':visible'))
+  {
+    this.pattern_tracker = setInterval(this.track, 100);
+  } else
+  {
+    this.editor_tracker = setInterval(this.editor_track, 100);
+  }
 
 };
 
@@ -93,9 +106,17 @@ function render_song(data)
 function clear_song()
 {
   clearInterval(song.pattern_tracker);
-  $('.song_container').empty();
+  $('.canvas_container').empty();
+  $('#tracking_container').empty();
   song = new Song();
 
+
+}
+
+function reset_song()
+{
+  clear_song();
+  insert_segment();
 }
 
 

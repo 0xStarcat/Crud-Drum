@@ -3,10 +3,8 @@ var library_listeners;
 var canvas_listeners;
 $(document).ready(function()
 {
-
   clips_listeners = new Clips_Listeners;
   library_listeners = new Library_Listeners;
-
 })
 
 function Clips_Listeners()
@@ -27,7 +25,7 @@ function Clips_Listeners()
   this.save_song_button.on('click', save_song);
   $('#load_song').on('click', load_song);
   this.new_song_button = $('#new_song');
-  this.new_song_button.on('click', clear_song);
+  this.new_song_button.on('click', reset_song);
   this.mount;
   this.mount_listener;
   this.mount_target;
@@ -64,6 +62,67 @@ function Library_Listeners()
     });
 }
 
+var prime_cursor = function(e)
+{
+  $(e.target).on('mouseout', mount_cursor);
+}
+
+var mount_cursor = function(e)
+  {
+    $('body').css({'opacity': '0.6'})
+    $('canvas').off('mouseup', unmount_cursor);
+    $('canvas').on('mouseup', unmount_cursor);
+    var id = $(e.target).attr('clip');
+    clips_listeners.mount = id;
+    add_hover_class();
+    $(e.target).off('mouseout', mount_cursor);
+  }
+
+var unmount_cursor = function(e)
+{
+
+  clips_listeners.mount_target = e.target.getAttribute('id');
+  if (clips_listeners.mount_target == clip_editor.id)
+  {
+    var clip = clip_editor
+
+  } else {
+    find_mount_destination()
+    var clip = clips_listeners.mount_destination;
+  }
+  load_clip(e, clips_listeners.mount, clip)
+  clips_listeners.mount = undefined;
+  clips_listeners.mount_target = undefined;
+  clips_listeners.mount_destination = undefined;
+  $('canvas').off('mouseup', unmount_cursor);
+  $('body').css({'opacity': '1'})
+  remove_hover_class();
+}
+
+var on_song_screen = function()
+{
+  return ($('#s_d').is(':visible'))
+}
+
+var find_mount_destination = function()
+{
+
+  var target = clips_listeners.mount_target;
+  song.clips.forEach(function(clip)
+  {
+    clip.forEach(function(pattern)
+    {
+      if (pattern.id == target)
+      {
+
+        clips_listeners.mount_destination = pattern;
+        console.log("destination", pattern)
+      }
+    })
+
+  });
+}
+
 var save_clip = function()
 {
   var user_id = document.querySelector('.user_id').getAttribute('user');
@@ -81,13 +140,13 @@ var save_clip = function()
 
 var load_clip = function(e, clip, canvas)
 {
-
+  console.log("LOADING clip", clip, " to ", canvas);
   var id = clip;
   console.log("get clip id:", id)
   ajax_this('/clip_req', 'GET', {id: id}, success, error_function)
   function success(data)
   {
-    console.log("CLIP LOADED FROM SERVEr", data);
+    console.log("CLIP LOADED FROM SERVER", data);
     var pattern = JSON.parse(data.coords);
 
     loadPattern(pattern, canvas);
@@ -131,19 +190,20 @@ var toggle_view = function(e)
 {
 
   $('#clip_container').toggle(250);
-  $('#song_display').toggle(250, switch_playback);
+  $('#s_d').toggle(250, switch_playback);
 
 }
 
 var switch_playback = function()
 {
-  if ($('#song_display').is(':visible'))
+  if ($('#s_d').is(':visible'))
   {
     if (song.editing)
       {
         var pattern = clip_editor.pattern;
         var canvas = song.clips[song.editing_segment][song.editing_clip]
         loadPattern(pattern, canvas);
+
       }
     clearInterval(song.editor_tracker)
     reset_tracker(clip_editor);
@@ -167,17 +227,22 @@ var insert_segment = function(e)
 
 function addClip(width)
 {
-
+  var instruments = ["original"];
   var segment = []
   for (var i = 0; i < 4; i++)
   {
-    var new_clip = new Pattern(width, i)
+    var instr = new Instruments();
+
+    var new_clip = new Pattern(width, i, instr[instruments[0]]);
     segment.push(new_clip);
   }
   $('.song_canvas').off('dblclick', add_dblclick);
   canvas_listeners = Canvas_Listeners()
   song.clips.push(segment)
   song.track_length+=16;
+
+  var tracking_control = new Tracker(width, song.tracker_segments.length);
+  song.tracker_segments.push(tracking_control);
 }
 
 function toggle_mouse(e)
@@ -232,64 +297,9 @@ var load_song = function(e)
   }
 }
 
-var prime_cursor = function(e)
-{
-  $(e.target).on('mouseout', mount_cursor);
-}
 
-var mount_cursor = function(e)
-  {
-    $('body').css({'opacity': '0.6'})
-    $('canvas').off('mouseup', unmount_cursor);
-    $('canvas').on('mouseup', unmount_cursor);
-    var id = $(e.target).attr('clip');
-    clips_listeners.mount = id;
-    add_hover_class();
-    $(e.target).off('mouseout', mount_cursor);
-  }
 
-var unmount_cursor = function(e)
-{
 
-  clips_listeners.mount_target = e.target.getAttribute('id');
-  if (clips_listeners.mount_target == clip_editor.id)
-  {
-    var clip = clip_editor
-
-  } else {
-    find_mount_destination()
-    var clip = clips_listeners.mount_destination;
-  }
-  load_clip(e, clips_listeners.mount, clip)
-  clips_listeners.mount = undefined;
-  clips_listeners.mount_target = undefined;
-  clips_listeners.mount_destination = undefined;
-  $('canvas').off('mouseup', unmount_cursor);
-  $('body').css({'opacity': '1'})
-  remove_hover_class();
-}
-
-var on_song_screen = function()
-{
-  return ($('#song_display').is(':visible'))
-}
-
-var find_mount_destination = function()
-{
-
-  var target = clips_listeners.mount_target;
-  song.clips.forEach(function(clip)
-  {
-    clip.forEach(function(pattern)
-    {
-      if (pattern.id == target)
-      {
-        clips_listeners.mount_destination = pattern;
-      }
-    })
-
-  });
-}
 
 function add_hover_class()
 {
