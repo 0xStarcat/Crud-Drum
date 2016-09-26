@@ -4,17 +4,18 @@
     <a id = "signout" href ="/signout">Log out!</a>
   </div>
   <div id ="control_row">
-    <label for="edit_name" id ="edit_name_label">Untitled</label>
-    <input type = "text">
+    <label for="edit_name" id ="name_input_label">Title</label>
+    <input type = "text" id ="edit_name_input">
     <button class = "switch_button">Switch View</button>
-    <button class = "stop_button">Stop</button>
-    <button class = "play_button" style = "display:none;">Play</button>
+    <button class = "stop_button" style = "display:none;">Stop</button>
+    <button class = "play_button">Play</button>
     <button class ="save_button">Save</button>
     <button id ="new_button">New</button>
     <div class = "song_specific_buttons" style = "visibility:hidden;">
       <button id = "add_segment_button">Add Segment</button>
     </div>
   </div>
+  <label for="edit_name" id ="name_error" style="color:red"></label>
   <div id ="app_name">
     <span>Crud Drum</span>
   </div>

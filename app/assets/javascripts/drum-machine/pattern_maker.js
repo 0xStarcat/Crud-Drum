@@ -15,7 +15,7 @@ $(document).ready(function()
 function Pattern(width, track_number, instrument){
 
   var self = this;
-
+  this.instrument = instrument;
   this.id = makeId();
   this.width = width;
   this.pattern = []
@@ -23,11 +23,13 @@ function Pattern(width, track_number, instrument){
   this.data = {
     // `step` represents the current step (or beat) of the loop.
     step: 0,
-
     // `tracks` holds the six tracks of the drum machine.  Each track
     // has a sound and sixteen steps (or beats).
-    tracks: instrument
+    tracks: this.instrument.current_instrument
+
   };
+
+  this.synth_sliders = undefined;
   this.setupButtonClicking = function() {
 
   // Every time the user clicks on the canvas...
@@ -241,7 +243,7 @@ function Tracker(width, track_number)
 
   })(width, track_number)
 }
-function loadPattern(pattern, clip)
+function loadPattern(pattern, clip, instrument)
 {
   console.log("PATTERN", pattern)
   clearKit(clip);
@@ -253,8 +255,13 @@ function loadPattern(pattern, clip)
 
     clip.data.tracks[block["track"]].steps[block["step"]] = true;
     clip.pattern.push({step: block["step"], track: block["track"]})
-
+    loadInstrument(instrument)
   })
+
+}
+
+function loadInstrument(instrument)
+{
 
 }
 
@@ -269,6 +276,53 @@ function clearKit(clip)
     }
   }
 }
+
+
+function addClip(width)
+{
+
+  var instr_list = ["synth_1", "synth_2", "synth_3", "drum_kit"];
+
+  var segment = [];
+  for (var i = 0; i < 4; i++)
+  {
+    var instr_assignments = assign_instruments(instr_list[i])
+    console.log("ASSIGNMENTS", instr_assignments)
+    var instr = new Instruments(instr_assignments, instr_list[i]); //pass an array of string instr values
+    //console.log(instr[instr_list[i]])
+
+    var new_clip = new Pattern(width, i, instr);
+    segment.push(new_clip);
+  }
+  $('.song_canvas').off('dblclick', add_dblclick);
+  canvas_listeners = Canvas_Listeners();
+  song.clips.push(segment);
+  song.track_length+=16;
+
+  var tracking_control = new Tracker(width, song.tracker_segments.length);
+  song.tracker_segments.push(tracking_control);
+}
+
+function assign_instruments(instr)
+{
+  switch (instr)
+  {
+    case "custom_kit":
+    return ["percus1_play","hihat1_play","tom1_play","clap1_play","snare1_play","kick1_play"]
+    break
+    case "synth_1":
+    return []
+    break
+    case "synth_2":
+    return []
+    break
+    case "synth_3":
+    return []
+    break
+  }
+
+}
+
 
 function makeId()
 {

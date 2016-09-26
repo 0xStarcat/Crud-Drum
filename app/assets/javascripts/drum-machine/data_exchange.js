@@ -7,15 +7,24 @@ function Session_Data()
 
 var save_clip = function()
 {
-  disable_buttons();
-  var user_id = document.querySelector('.user_id').getAttribute('user');
+  if (check_name_input())
+  {
+    disable_buttons();
+    var user_id = document.querySelector('.user_id').getAttribute('user');
+    var name = controls.name_input.val();
+    var data = {user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.instrument)};
+    var instrument = clip_editor.instrument;
+    console.log(name);
+    console.log("SAVE DATA", data);
+    ajax_this('/clips', 'POST', data, success, error_function)
+  } else
+  {
 
-  var data = {user_id: parseInt(user_id), coords: JSON.stringify(clip_editor.pattern)};
-  console.log("SAVE DATA", data);
+  }
 
-  ajax_this('/clips', 'POST', data, success, error_function)
   function success(data)
   {
+    controls.name_error.text('');
     library_listeners = new Library_Listeners;
     enable_buttons();
   }
@@ -23,18 +32,26 @@ var save_clip = function()
 
 var save_song = function()
 {
-  disable_buttons();
-  var user_id = document.querySelector('.user_id').getAttribute('user');
-
-  var data = {user_id: parseInt(user_id), data: JSON.stringify(song.clips)};
-  console.log("SAVE SONG", data);
-
-  ajax_this('/songs', 'POST', data, success, error_function)
-  function success(data)
+  if (check_name_input())
   {
-    library_listeners = new Library_Listeners;
-    enable_buttons();
+    disable_buttons();
+    var user_id = document.querySelector('.user_id').getAttribute('user');
+    var name = controls.name_input.val();
+    console.log(name);
+    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument)};
+    console.log("SAVE SONG", data);
+
+    ajax_this('/songs', 'POST', data, success, error_function)
+  } else
+  {
+
   }
+    function success(data)
+    {
+      controls.name_error.text('');
+      library_listeners = new Library_Listeners;
+      enable_buttons();
+    }
 }
 
 var load_clip = function(e, clip, canvas)
@@ -49,9 +66,12 @@ var load_clip = function(e, clip, canvas)
     stop();
     console.log("CLIP LOADED FROM SERVER", data);
     var pattern = JSON.parse(data.coords);
+    var instrument = JSON.parse(data.instrument);
     session.editor_data = data;
-    loadPattern(pattern, canvas);
+    loadPattern(pattern, canvas, instrument);
+    //loadInstrument(instrument);
     enable_buttons();
+    controls.name_input.val(data.name);
   }
 };
 
@@ -59,7 +79,7 @@ var load_song = function(e)
 {
 
   disable_buttons();
-  var id = e.target.getAttribute('song');
+  var id = $(e.target).attr('song') || $(e.target).parent().attr('song');
   console.log("get song id:", id)
   ajax_this('/song_req', 'GET', {id: id}, success, error_function)
   function success(data)
@@ -70,6 +90,7 @@ var load_song = function(e)
     session.song_data = data;
     render_song(load_song);
     enable_buttons();
+    controls.name_input.val(data.name);
   }
 }
 
@@ -78,8 +99,8 @@ var update_clip = function()
   disable_buttons();
   var clip_id = session.editor_data.id;
   var user_id = session.editor_data.user_id;
-  var name = session.editor_data.name;
-  var data = {id: parseInt(clip_id), user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern)};
+  var name = controls.name_input.val();
+  var data = {id: parseInt(clip_id), user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.instrument)};
   console.log("UPDATE DATA", data);
   session.editor_data = data;
   ajax_this('/clips/'+clip_id, 'PATCH', data, success, error_function)
@@ -96,9 +117,9 @@ var update_song = function()
   disable_buttons();
   var song_id = session.song_data.id;
   var user_id = session.song_data.user_id;
-  var name = session.song_data.name;
+  var name = controls.name_input.val();
 
-  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips)};
+  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument)};
   session.song_data = data;
   console.log("UPDATE SONG", data);
 
@@ -108,5 +129,35 @@ var update_song = function()
     library_listeners = new Library_Listeners;
     enable_buttons();
 
+  }
+}
+
+function check_name_input()
+{
+  var reg = /\s/ig; //reg ex, all whitespace
+  console.log(controls.name_input.val())
+  var parsed = controls.name_input.val().replace(reg, "");
+  console.log(parsed);
+  if (parsed == "" )
+  {
+    controls.name_error.text('Please enter a valid name');
+    return false;
+  } else {
+    if (check_name_length(parsed))
+    {
+      return true;
+    }
+  }
+}
+
+function check_name_length(parsed)
+{
+  if (parsed.length > 20)
+  {
+    controls.name_error.text('Titles must be less than 20 chars.');
+    return false;
+  } else {
+
+    return true;
   }
 }

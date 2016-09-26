@@ -25,6 +25,8 @@ function Control_listeners()
   this.song_specific_buttons = $('.song_specific_buttons');
   this.new_button = $('#new_button');
   this.new_button.on('click', new_canvas);
+  this.name_input = $('#edit_name_input');
+  this.name_error = $('#name_error');
   this.mount;
   this.mount_listener;
   this.mount_target;
@@ -63,13 +65,18 @@ function Library_Listeners()
         {
           if (!$(e.target).hasClass('delete'))
             {
-              var clip = e.target.getAttribute('clip');
+              var clip = ($(e.target).attr('clip') != null) ? $(e.target).attr('clip') : $(e.target).parent().attr('clip');
+              console.log(clip)
               load_clip(e, clip, clip_editor);
               $(e.target).off('mouseout', mount_cursor);
             }
         })
     });
   $('.load_song_button').each(function(button)
+    {
+      $(this).on('click', load_song);
+    });
+  $('.song_card').each(function(button)
     {
       $(this).on('click', load_song);
     });
@@ -91,7 +98,7 @@ var mount_cursor = function(e)
     $('body').css({'opacity': '0.6', 'cursor':'copy'})
     $('canvas').off('mouseup', unmount_cursor);
     $('canvas').on('mouseup', unmount_cursor);
-    var id = $(e.target).attr('clip');
+    var id = ($(e.target).attr('clip') != null) ? $(e.target).attr('clip') : $(e.target).parent().attr('clip');
     controls.mount = id;
     add_hover_class();
     $(e.target).off('mouseout', mount_cursor);
@@ -279,25 +286,6 @@ var insert_segment = function(e)
 
 }
 
-function addClip(width)
-{
-  var instruments = ["original"];
-  var segment = []
-  for (var i = 0; i < 4; i++)
-  {
-    var instr = new Instruments();
-
-    var new_clip = new Pattern(width, i, instr[instruments[0]]);
-    segment.push(new_clip);
-  }
-  $('.song_canvas').off('dblclick', add_dblclick);
-  canvas_listeners = Canvas_Listeners()
-  song.clips.push(segment)
-  song.track_length+=16;
-
-  var tracking_control = new Tracker(width, song.tracker_segments.length);
-  song.tracker_segments.push(tracking_control);
-}
 
 function toggle_mouse(e)
 {
@@ -349,6 +337,7 @@ var offHover = function()
 function new_canvas()
 {
 
+  controls.name_input.val('');
   if ($('#s_d').is(':visible'))
   {
     session.song_data = undefined;
@@ -376,4 +365,6 @@ function enable_buttons()
 {
   $('button').prop('disabled', false);
 }
+
+
 

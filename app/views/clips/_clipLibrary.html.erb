@@ -4,7 +4,8 @@
   <ul class = "library_list" id ="clip_list">
   <% @clips.each do |clip| %>
   <li class = "card clip_card" clip =<%=clip.id%>>
-    <button class = "load_clip_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button>
+    <span class = "card_title"><%=clip.name%></span>
+    <!-- <button class = "load_clip_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button> -->
     <%= link_to delete_clip_path(id: "#{clip.id}"), method: :delete, :remote => true, :class => 'delete_clip' do %>
     <button class="delete">X</button>
     <%end%>
@@ -14,8 +15,9 @@
   <h2 class="list_title" id="song_list_title">Songs</h2>
   <ul class = "library_list" id ="song_list">
    <% @songs.each do |song| %>
-   <li class = "card song_card">
-    <button class = "load_song_button" song =<%=song.id%>>Load Song <%=song.id%></button>
+   <li song =<%=song.id%> class = "card song_card">
+    <span class = "card_title"><%=song.name%></span>
+    <!-- <button class = "load_song_button" song =<%=song.id%>>Load Song <%=song.id%></button> -->
     <%= link_to delete_song_path(id: "#{song.id}"), method: :delete, :remote => true, :class => 'delete_song' do %>
     <button class="delete">X</button>
     <%end%>

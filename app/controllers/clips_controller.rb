@@ -84,10 +84,11 @@ class ClipsController < ApplicationController
       clip: {
         coords: params[:coords],
         user_id: params[:user_id],
-        name: params[:name]
+        name: params[:name],
+        instrument: params[:instrument]
       }
     })
-    params.require(:clip).permit(:coords, :user_id, :name)
+    params.require(:clip).permit(:coords, :user_id, :name, :instrument)
 
   end
 end

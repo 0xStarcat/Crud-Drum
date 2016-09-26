@@ -74,19 +74,56 @@ function Buffer() {
 
 // Create the data for the drum machine.
 
-function Instruments() {
-  this.original = [createTrack("gold", b.percus1_play),
-             createTrack("gold", b.hihat1_play),
-             createTrack("gold", b.tom1_play),
-             createTrack("gold", b.clap1_play),
-             createTrack("gold", b.snare1_play),
-             createTrack("dodgerblue", b.kick1_play)];
-  this.drum_kit = [createTrack("gold", note(audio, 880)),
+function Instruments(instr_array, selection)
+{
+  if (instr_array == undefined)
+  {
+    instr_array = [null,null,null,null,null,null]
+  }
+  if (selection == undefined)
+  {
+    selection = "original"
+  }
+
+  this.original = [createTrack("gold", note(audio, 880)),
                createTrack("gold", note(audio, 659)),
                createTrack("gold", note(audio, 587)),
                createTrack("gold", note(audio, 523)),
                createTrack("gold", note(audio, 440)),
                createTrack("dodgerblue", kick(audio))]
+  this.drum_kit = [createTrack("gold", b.percus1_play),
+             createTrack("gold", b.hihat1_play),
+             createTrack("gold", b.tom1_play),
+             createTrack("gold", b.clap1_play),
+             createTrack("gold", b.snare1_play),
+             createTrack("dodgerblue", b.kick1_play)];
+  this.synth_1 = [createTrack("gold", note(audio, 880)),
+               createTrack("gold", note(audio, 659)),
+               createTrack("gold", note(audio, 587)),
+               createTrack("gold", note(audio, 523)),
+               createTrack("gold", note(audio, 440)),
+               createTrack("dodgerblue", kick(audio))]
+  this.synth_2 = [createTrack("gold", note(audio, 880)),
+               createTrack("gold", note(audio, 659)),
+               createTrack("gold", note(audio, 587)),
+               createTrack("gold", note(audio, 523)),
+               createTrack("gold", note(audio, 440)),
+               createTrack("dodgerblue", kick(audio))]
+  this.synth_3 = [createTrack("gold", note(audio, 880)),
+               createTrack("gold", note(audio, 659)),
+               createTrack("gold", note(audio, 587)),
+               createTrack("gold", note(audio, 523)),
+               createTrack("gold", note(audio, 440)),
+               createTrack("dodgerblue", kick(audio))]
+  this.custom_kit = [createTrack("gold", b[instr_array[0]]),
+               createTrack("gold", b[instr_array[1]]),
+               createTrack("gold", b[instr_array[2]]),
+               createTrack("gold", b[instr_array[3]]),
+               createTrack("gold", b[instr_array[4]]),
+               createTrack("dodgerblue", b[instr_array[5]])]
+  this.current_instrument = this[selection]
+
+
 }
 
   // Update

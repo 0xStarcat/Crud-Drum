@@ -12,8 +12,6 @@ $('document').ready(function()
   session = new Session_Data();
   load_samples(b.index);
 
-
-
   controls = new Control_listeners;
   library_listeners = new Library_Listeners;
 
@@ -60,9 +58,9 @@ function load_samples(index)
   function samples_loaded()
   {
     var large_screen = 687;
-    instr = new Instruments();
+    instr = new Instruments(undefined, undefined);
     song = new Song();
     insert_segment();
-    clip_editor = new Pattern(large_screen, -1, instr.original)
+    clip_editor = new Pattern(large_screen, -1, instr)
     enable_buttons();
   }
