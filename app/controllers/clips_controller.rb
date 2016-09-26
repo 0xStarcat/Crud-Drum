@@ -42,11 +42,28 @@ class ClipsController < ApplicationController
   end
 
   def update
+    @clip = Clip.find(params[:id])
+    @clip.update(clip_params(params))
 
+    if current_user
+      @clips = Clip.where(user_id: current_user.id)
+      @songs = Song.where(user_id: current_user.id)
+      respond_to do |format|
+      format.js
+      end
+    end
   end
 
-  def destroy
+  def delete_clip
+    if current_user
+      Clip.destroy(params[:id])
+      @clips = Clip.where(user_id: current_user.id)
+      @songs = Song.where(user_id: current_user.id)
 
+      respond_to do |format|
+      format.js
+      end
+    end
   end
 
   def load_clip
@@ -66,10 +83,11 @@ class ClipsController < ApplicationController
     params = ActionController::Parameters.new({
       clip: {
         coords: params[:coords],
-        user_id: params[:user_id]
+        user_id: params[:user_id],
+        name: params[:name]
       }
     })
-    params.require(:clip).permit(:coords, :user_id)
+    params.require(:clip).permit(:coords, :user_id, :name)
 
   end
 end

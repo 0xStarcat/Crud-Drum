@@ -3,8 +3,6 @@ var clip_editor;
 var b;
 $(document).ready(function(){
 
-  b = new Buffer();
-  load_samples(b.index);
 
 
 })
@@ -69,19 +67,16 @@ function Song()
       .filter(function(track) {  return track.steps[clip_editor.data.step]; })
       .forEach(function(track)
         {
-
           track.playSound();
         });
   }
   //move these trackers to the pattern
   //and clear the trackers in the stop function
-  if ($('#s_d').is(':visible'))
-  {
-    this.pattern_tracker = setInterval(this.track, 100);
-  } else
-  {
-    this.editor_tracker = setInterval(this.editor_track, 100);
-  }
+
+    //this.pattern_tracker = setInterval(this.track, 100);
+
+    //this.editor_tracker = setInterval(this.editor_track, 100);
+
 
 };
 
@@ -89,18 +84,23 @@ function render_song(data)
 {
   console.log(data)
   clear_song();
-  data.forEach(function(segment, i)
+  if (data)
   {
-    insert_segment();
-    segment.forEach(function(clip, j)
+   data.forEach(function(segment, i)
     {
-      data[i][j].screen = song.clips[i][j].screen;
-      var canvas = song.clips[i][j];
-      var pattern = clip.pattern;
-      loadPattern(pattern, canvas);
+      insert_segment();
+      segment.forEach(function(clip, j)
+      {
+        data[i][j].screen = song.clips[i][j].screen;
+        var canvas = song.clips[i][j];
+        var pattern = clip.pattern;
+        loadPattern(pattern, canvas);
+      })
     })
+  } else {
+    console.log('no data to render')
+  }
 
-  })
 }
 
 function clear_song()
@@ -109,15 +109,8 @@ function clear_song()
   $('.canvas_container').empty();
   $('#tracking_container').empty();
   song = new Song();
-
-
 }
 
-function reset_song()
-{
-  clear_song();
-  insert_segment();
-}
 
 
 

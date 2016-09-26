@@ -53,56 +53,7 @@ var source = audio.createBufferSource();
     }
   }
 
-  function load_samples(index)
-  {
 
-   var source = audio.createBufferSource();
-   var request = new XMLHttpRequest();
-   var audioURL = '/load_samples'
-   var params = ["kick1", "kick2","kick3", "snare1", "snare2","snare3", "hihat1", "hihat2","hihat3", "cymbal1", "cymbal2","cymbal3", "clap1", "clap2","clap3", "tom1", "tom2","tom3", "percus1", "percus2","percus3"]
-
-      request.open('GET', audioURL+"?"+"sample="+params[index], true);
-      console.log(params[index]);
-      request.responseType = 'arraybuffer';
-      request.onload = function() {
-
-        var audioData = request.response;
-        console.log(audioData);
-        audio.decodeAudioData(audioData, function(buffer) {
-
-            //b.source.buffer = buffer;
-
-            //b.source.connect(audio.destination);
-            //b.source.start();
-            b[params[index]] = audioData;
-            b[params[index]+"_play"] = function()
-            {
-              play_sample(b[params[index]])
-            }
-            b.index++;
-            if (b.index < params.length)
-            {
-              load_samples(b.index)
-            } else {
-              var instr = new Instruments();
-              song = new Song();
-              insert_segment();
-
-              var large_screen = 687;
-
-              clip_editor = new Pattern(large_screen, -1, instr.original)
-              console.log('done loading samples!')
-            }
-            //play_sample();
-          },
-
-          function(e){"Error with decoding audio data" + e.err});
-
-      }
-
-      request.send();
-
-  };
 
 
 function Buffer() {
@@ -130,14 +81,13 @@ function Instruments() {
              createTrack("gold", b.clap1_play),
              createTrack("gold", b.snare1_play),
              createTrack("dodgerblue", b.kick1_play)];
+  this.drum_kit = [createTrack("gold", note(audio, 880)),
+               createTrack("gold", note(audio, 659)),
+               createTrack("gold", note(audio, 587)),
+               createTrack("gold", note(audio, 523)),
+               createTrack("gold", note(audio, 440)),
+               createTrack("dodgerblue", kick(audio))]
 }
-this.drum_kit = [createTrack("gold", note(audio, 880)),
-             createTrack("gold", note(audio, 659)),
-             createTrack("gold", note(audio, 587)),
-             createTrack("gold", note(audio, 523)),
-             createTrack("gold", note(audio, 440)),
-             createTrack("dodgerblue", kick(audio))]
-
 
   // Update
   // ------

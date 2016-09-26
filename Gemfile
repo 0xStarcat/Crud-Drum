@@ -1,3 +1,4 @@
+ruby '2.2.3'
 source 'https://rubygems.org'
 
 gem 'omniauth-oauth2', '~> 1.3.1'

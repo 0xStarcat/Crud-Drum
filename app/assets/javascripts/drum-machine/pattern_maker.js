@@ -34,7 +34,7 @@ function Pattern(width, track_number, instrument){
   document.querySelector("#"+self.id).addEventListener("mousemove", function(e) {
     // ...Get the coordinates of the mouse pointer relative to the
     // canvas...
-    if (clips_listeners.mouse_down && clips_listeners.mount == undefined)
+    if (controls.mouse_down && controls.mount == undefined)
     {
       var p = { x: e.offsetX, y: e.offsetY };
 

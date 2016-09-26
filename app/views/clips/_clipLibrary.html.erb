@@ -1,13 +1,25 @@
 
 <% if current_user %>
-  <h2>Clips</h2>
+  <h2 class="list_title" id="clip_list_title">Clips</h2>
+  <ul class = "library_list" id ="clip_list">
   <% @clips.each do |clip| %>
+  <li class = "card clip_card" clip =<%=clip.id%>>
     <button class = "load_clip_button" clip =<%=clip.id%>>Load Clip <%=clip.id%></button>
-    <hr/>
+    <%= link_to delete_clip_path(id: "#{clip.id}"), method: :delete, :remote => true, :class => 'delete_clip' do %>
+    <button class="delete">X</button>
+    <%end%>
+  </li>
   <% end %>
-  <h2>Songs</h2>
+  </ul>
+  <h2 class="list_title" id="song_list_title">Songs</h2>
+  <ul class = "library_list" id ="song_list">
    <% @songs.each do |song| %>
+   <li class = "card song_card">
     <button class = "load_song_button" song =<%=song.id%>>Load Song <%=song.id%></button>
-    <hr/>
+    <%= link_to delete_song_path(id: "#{song.id}"), method: :delete, :remote => true, :class => 'delete_song' do %>
+    <button class="delete">X</button>
+    <%end%>
+   </li>
   <% end %>
+  </ul>
 <% end %>

@@ -1,4 +1,22 @@
-<hr>
-<a href = "/users">Users</a> ||
-<a href ="/clips">Clips</a>
-<hr>
+<% if current_user %>
+  <div id ="user_box">
+    <span id = "welcome"> Welcome <%= current_user.name%></span>
+    <a id = "signout" href ="/signout">Log out!</a>
+  </div>
+  <div id ="control_row">
+    <label for="edit_name" id ="edit_name_label">Untitled</label>
+    <input type = "text">
+    <button class = "switch_button">Switch View</button>
+    <button class = "stop_button">Stop</button>
+    <button class = "play_button" style = "display:none;">Play</button>
+    <button class ="save_button">Save</button>
+    <button id ="new_button">New</button>
+    <div class = "song_specific_buttons" style = "visibility:hidden;">
+      <button id = "add_segment_button">Add Segment</button>
+    </div>
+  </div>
+  <div id ="app_name">
+    <span>Crud Drum</span>
+  </div>
+
+<% end %>

@@ -11,6 +11,10 @@ get 'load_samples', to: 'users#send_samples'
 get 'user_req', to: 'users#return_data'
 get 'clip_req', to: 'clips#load_clip'
 get 'song_req', to: 'songs#load_song'
+
+delete "/clips" => "clips#delete_clip", as: :delete_clip
+delete "/songs" => "songs#delete_song", as: :delete_song
+
 get "/auth/:provider/callback" => "sessions#create"
 get "signout" => "sessions#destroy", :as => :signout
 

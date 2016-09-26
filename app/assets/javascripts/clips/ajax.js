@@ -10,7 +10,9 @@ function ajax_this(url, method, data, success, error){
     },
     error: function(data)
     {
+      enable_buttons();
       error(url, method, data);
+
     }
   })
 }
