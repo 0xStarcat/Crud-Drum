@@ -58,9 +58,18 @@ function load_samples(index)
   function samples_loaded()
   {
     var large_screen = 687;
-    instr = new Instruments(undefined, undefined);
+    instr = new Instruments(undefined, "drum_kit");
     song = new Song();
     insert_segment();
-    clip_editor = new Pattern(large_screen, -1, instr)
+    clip_editor = new Pattern(large_screen, -1, instr);
     enable_buttons();
+
+   // test();
+  }
+
+  function test()
+  {
+    var new_data = {step: 0, tracks: instr.drum_kit, type: instr.type};
+    console.log(new_data);
+    loadInstrument(clip_editor, new_data)
   }

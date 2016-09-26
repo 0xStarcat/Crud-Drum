@@ -27,6 +27,8 @@ function Control_listeners()
   this.new_button.on('click', new_canvas);
   this.name_input = $('#edit_name_input');
   this.name_error = $('#name_error');
+  this.selection_boxes = $('select');
+  this.selection_boxes.on('change', selection);
   this.mount;
   this.mount_listener;
   this.mount_target;
@@ -42,7 +44,6 @@ function Canvas_Listeners()
 function add_dblclick(e)
 {
   var id = $(e.target).attr('id');
-  console.log(id)
   expand_clip($(e.target));
 }
 
@@ -135,16 +136,17 @@ var check_screen = function()
 {
   if (!$('#s_d').is(':visible'))
   {
-    if (song.editing)
+
+    if (controls.editing)
     {
       var pattern = clip_editor.pattern;
       var canvas = song.clips[song.editing_segment][song.editing_clip]
-      loadPattern(pattern, canvas);
+      var instrument_data = song.clips[song.editing_segment][song.editing_clip]["data"];
+      loadPattern(pattern, canvas, instrument_data);
 
     }
-    else if (!song.editing)
+    else if (!controls.editing)
     {
-
 
     }
     controls.song_specific_buttons.css({'visibility':'hidden'});
@@ -152,8 +154,23 @@ var check_screen = function()
   }
   else if ($('#s_d').is(':visible'))
   {
+    controls.name_input.val('');
+    controls.editing = false;
     stop();
     controls.song_specific_buttons.css({'visibility':'visible'});
+  }
+}
+
+function check_instrument_type(instrument_data)
+{
+  console.log("CHECK INSTRUMENT",instrument_data.type)
+  if (instrument_data.type == "drum_kit" || instrument_data.type == "custom_kit")
+  {
+    $('.drum_sample_pick').show();
+  }
+  else
+  {
+    $('.drum_sample_pick').hide();
   }
 }
 
@@ -298,10 +315,12 @@ function expand_clip(id)
   var segment = $(id).attr('segment');
   var clip = $(id).attr('clip');
   var pattern = song.clips[segment][clip]["pattern"];
-  loadPattern(pattern, clip_editor);
+
+  var instrument_data = song.clips[segment][clip]["data"];
+  loadPattern(pattern, clip_editor, instrument_data);
   song.editing_segment = segment;
   song.editing_clip = clip;
-
+  check_instrument_type(instrument_data);
   toggle_view();
 }
 
@@ -336,7 +355,7 @@ var offHover = function()
 
 function new_canvas()
 {
-
+  controls.editing = false;
   controls.name_input.val('');
   if ($('#s_d').is(':visible'))
   {
@@ -366,5 +385,12 @@ function enable_buttons()
   $('button').prop('disabled', false);
 }
 
-
+function selection(e)
+{
+  var value = $(e.target).closest('select').val();
+  value = value+'_play';
+  var index = $(e.target).closest('select').attr('index');
+  stop();
+  change_track_instrument(clip_editor, index, value);
+}
 

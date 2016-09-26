@@ -166,5 +166,24 @@ body{
   background: black;
 }
 
+#instrument_select{
+  position: absolute;
+  left: $library-width;
+  width: 150px;
+  top: 30px;
+  height: 100%;
+  z-index: 1;
+}
+
+.drum_sample_pick {
+  position: relative;
+  height: 80px;
+  width: 100px;
+  margin: 12px;
+}
+
+
+
+
 
 

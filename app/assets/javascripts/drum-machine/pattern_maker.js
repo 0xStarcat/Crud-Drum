@@ -15,7 +15,7 @@ $(document).ready(function()
 function Pattern(width, track_number, instrument){
 
   var self = this;
-  this.instrument = instrument;
+  //this.instrument = instrument;
   this.id = makeId();
   this.width = width;
   this.pattern = []
@@ -25,9 +25,12 @@ function Pattern(width, track_number, instrument){
     step: 0,
     // `tracks` holds the six tracks of the drum machine.  Each track
     // has a sound and sixteen steps (or beats).
-    tracks: this.instrument.current_instrument
-
+    tracks: instrument.current_instrument,
+    type: instrument.type,
+    instr_tags: instrument.instr_tags
   };
+
+
 
   this.synth_sliders = undefined;
   this.setupButtonClicking = function() {
@@ -106,6 +109,7 @@ function Pattern(width, track_number, instrument){
     self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
 
     // Draw all the tracks.
+
     drawTracks(self.screen, self.data, self.BUTTON_SIZE)
 
     // Draw the pink square that indicates the current step (beat).
@@ -243,27 +247,66 @@ function Tracker(width, track_number)
 
   })(width, track_number)
 }
-function loadPattern(pattern, clip, instrument)
+function loadPattern(pattern, canvas, instrument_data)
 {
-  console.log("PATTERN", pattern)
-  clearKit(clip);
+  //Draws pattern onto the canvas
+  console.log("PATTERN", pattern, canvas, instrument_data)
+  clearKit(canvas);
 
   //row = data.tracks
   //column = data.tracks[i].steps
+
+  if (instrument_data)
+  {
+    reconstruct_instrument(canvas, instrument_data);
+
+  }
   pattern.forEach(function(block)
   {
 
-    clip.data.tracks[block["track"]].steps[block["step"]] = true;
-    clip.pattern.push({step: block["step"], track: block["track"]})
-    loadInstrument(instrument)
-  })
+    canvas.data.tracks[block["track"]].steps[block["step"]] = true;
+    canvas.pattern.push({step: block["step"], track: block["track"]})
 
+  })
 }
 
-function loadInstrument(instrument)
+function change_track_instrument(canvas,index,value)
 {
 
+  canvas.data.instr_tags.splice(index, 1, value);
+  canvas.data.step = 0;
+  canvas.data.type = "custom_kit";
+  session.editor_data = canvas.data;
+  reconstruct_instrument(canvas, canvas.data);
+  loadPattern(clip_editor.pattern, canvas, undefined)
 }
+
+function reconstruct_instrument(canvas, instrument_data)
+{
+  //Javascript function variables don't getp assed to database
+  //so need to reconstruct the instrument array if a custom instrument was made
+  switch (instrument_data.type){
+    case "custom_kit":
+      var new_instr = new Instruments(instrument_data.instr_tags, instrument_data.type)
+      canvas.data.tracks = new_instr.current_instrument
+    break
+    default:
+    var default_instr = instrument_data.type
+    var instrument_tracks = instr[default_instr]
+    console.log(instrument_data, instr[instrument_data.type]);
+    instrument_data.tracks = instrument_tracks;
+    loadInstrument(canvas, instrument_data)
+    break
+  }
+}
+
+function loadInstrument(canvas, instrument_data)
+{
+  console.log(instrument_data);
+  canvas.data = instrument_data;
+}
+
+
 
 function clearKit(clip)
 {

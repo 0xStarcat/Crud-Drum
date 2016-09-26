@@ -12,10 +12,9 @@ var save_clip = function()
     disable_buttons();
     var user_id = document.querySelector('.user_id').getAttribute('user');
     var name = controls.name_input.val();
-    var data = {user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.instrument)};
-    var instrument = clip_editor.instrument;
+    var data = {user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.data)};
     console.log(name);
-    console.log("SAVE DATA", data);
+    console.log("SAVE CLIP", data);
     ajax_this('/clips', 'POST', data, success, error_function)
   } else
   {
@@ -38,9 +37,8 @@ var save_song = function()
     var user_id = document.querySelector('.user_id').getAttribute('user');
     var name = controls.name_input.val();
     console.log(name);
-    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument)};
+    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.data)};
     console.log("SAVE SONG", data);
-
     ajax_this('/songs', 'POST', data, success, error_function)
   } else
   {
@@ -67,11 +65,20 @@ var load_clip = function(e, clip, canvas)
     console.log("CLIP LOADED FROM SERVER", data);
     var pattern = JSON.parse(data.coords);
     var instrument = JSON.parse(data.instrument);
+    var instrument_data = {step: instrument.step, tracks: instrument.tracks, type: instrument.type}
+
     session.editor_data = data;
-    loadPattern(pattern, canvas, instrument);
+    loadPattern(pattern, canvas, instrument_data);
+    check_instrument_type(instrument_data);
+
     //loadInstrument(instrument);
     enable_buttons();
-    controls.name_input.val(data.name);
+    if (controls.editing == true)
+    {
+      controls.name_input.val(data.name);
+    }
+
+
   }
 };
 
@@ -100,7 +107,7 @@ var update_clip = function()
   var clip_id = session.editor_data.id;
   var user_id = session.editor_data.user_id;
   var name = controls.name_input.val();
-  var data = {id: parseInt(clip_id), user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.instrument)};
+  var data = {id: parseInt(clip_id), user_id: parseInt(user_id), name: name, coords: JSON.stringify(clip_editor.pattern), instrument: JSON.stringify(clip_editor.data)};
   console.log("UPDATE DATA", data);
   session.editor_data = data;
   ajax_this('/clips/'+clip_id, 'PATCH', data, success, error_function)
