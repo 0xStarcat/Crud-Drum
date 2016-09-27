@@ -12,14 +12,16 @@ $(document).ready(function()
 
 
 
-function Pattern(width, track_number, instrument){
+function Pattern(width, track_number, instrument, segment_number){
 
   var self = this;
+  this.segment_number = segment_number;
   //this.instrument = instrument;
   this.id = makeId();
   this.width = width;
   this.pattern = []
   this.is_playing = true;
+  this.track_number = track_number;
   this.data = {
     // `step` represents the current step (or beat) of the loop.
     step: 0,
@@ -102,20 +104,23 @@ function Pattern(width, track_number, instrument){
 
   });
 };
-  this.draw = function() {
+  this.draw = function(segment_number) {
 
     // Clear away the previous drawing.
     self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
 
     // Draw all the tracks.
 
-    drawTracks(self.screen, self.data, self.BUTTON_SIZE)
+    drawTracks(self.screen, self.data, self.BUTTON_SIZE, self.segment_number)
 
     // Draw the pink square that indicates the current step (beat).
-    if (track_number < 0)
-    {
-      drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
-    }
+
+      drawButton(self.screen, self.data.step, self.data.tracks[0], "deeppink", self.BUTTON_SIZE, self.segment_number);
+
+    // if (song.current_segment == track_number)
+    // {
+    //   drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
+    // }
 
     // Ask the browser to call `draw()` again in the near future.
     requestAnimationFrame(self.draw);
@@ -139,7 +144,7 @@ function Pattern(width, track_number, instrument){
     self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
     self.setupButtonClicking();
 
-    self.draw();
+    self.draw(self.segment_number);
   })(width, track_number)
 }
 
@@ -165,14 +170,34 @@ function createTrack(color, playSound) {
   };
 
   // **drawButton()** draws a button in `color` at `column` and `row`.
-  function drawButton(screen, column, row, color, BUTTON_SIZE) {
+  function drawButton(screen, column, row, color, BUTTON_SIZE, segment_number) {
     var position = buttonPosition(column, row, BUTTON_SIZE);
-    screen.fillStyle = color;
+
+    if (song.master_step != column || song.current_segment != segment_number)
+    {
+      screen.fillStyle = color;
+    } else if (song.master_step == column && song.current_segment == segment_number)
+    {
+      //console.log(track_number)
+      screen.fillStyle = 'deeppink';
+    } else {
+      screen.fillStyle = color;
+    }
+
+    if (song.editor_step != column)
+    {
+       screen.fillStyle = color;
+    } else {
+      screen.fillStyle = 'deeppink';
+    }
+
+
     screen.fillRect(position.x, position.y, BUTTON_SIZE, BUTTON_SIZE);
+
   };
 
   // **drawTracks()** draws the tracks in the drum machine.
-  function drawTracks(screen, data, BUTTON_SIZE) {
+  function drawTracks(screen, data, BUTTON_SIZE, segment_number) {
 
     data.tracks.forEach(function(track, row) {
       track.steps.forEach(function(on, column) {
@@ -182,26 +207,26 @@ function createTrack(color, playSound) {
                      column,
                      row,
                      on ? track.color : 'rgba(66,185,66,1)',
-                     BUTTON_SIZE);
+                     BUTTON_SIZE, segment_number);
 
         } else if (row == 4 && column % 4 != 0) {
           drawButton(screen,
                      column,
                      row,
                      on ? track.color : 'rgba(188,220,188,1)',
-                     BUTTON_SIZE);
+                     BUTTON_SIZE, segment_number);
         } else if (row == 3 && column % 4 != 0) {
           drawButton(screen,
                      column,
                      row,
                      on ? track.color : 'rgba(158,220,188,1)',
-                     BUTTON_SIZE);
+                     BUTTON_SIZE, segment_number);
         }else {
           drawButton(screen,
                      column,
                      row,
                      on ? track.color : 'rgba(205,205,205,1)',
-                     BUTTON_SIZE);
+                     BUTTON_SIZE, segment_number);
         }
       });
     });
@@ -366,7 +391,7 @@ function addClip(width)
     var instr = new Instruments(instr_assignments, instr_list[i]["wave"], instr_list[i]["mult"]); //pass an array of string instr values
     //console.log(instr[instr_list[i]])
 
-    var new_clip = new Pattern(width, i, instr);
+    var new_clip = new Pattern(width, i, instr, song.clips.length);
     segment.push(new_clip);
   }
   $('.song_canvas').off('dblclick', add_dblclick);
@@ -374,8 +399,8 @@ function addClip(width)
   song.clips.push(segment);
   song.track_length+=16;
 
-  var tracking_control = new Tracker(width, song.tracker_segments.length);
-  song.tracker_segments.push(tracking_control);
+  //var tracking_control = new Tracker(width, song.tracker_segments.length);
+  //song.tracker_segments.push(tracking_control);
 }
 
 function assign_instruments(instr)

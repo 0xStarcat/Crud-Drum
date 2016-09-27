@@ -60,28 +60,7 @@ body{
 
 
 
-#s_d{
-  position: fixed;
-  height: 100%;
-  width: 100%;
-  left: $library-width;
-  top: $nav-height;
 
-}
-
-#song_display{
-  height: 700px;
-  display: flex;
-  position: fixed;
-  top: $song-control-height + $nav-height;
-  bottom: 0;
-  left: $library-width;
-  right: 0;
-  flex-direction: row;
-
-  background-color: rgba(44,44,44,0.1);
-  overflow: scroll;
-}
 
 
 
