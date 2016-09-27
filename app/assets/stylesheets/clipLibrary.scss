@@ -9,7 +9,7 @@ $track-type-width: 75px;
   left:0;
   width: $library-width;
   height:100vh;
-  overflow-y:scroll;
+
   background-color: rgba(44,44,44,1);
   text-align: center;
   -moz-user-select: none;
@@ -18,6 +18,10 @@ $track-type-width: 75px;
   -ms-user-select: none;
   user-select: none;
 
+}
+
+.library_list{
+  overflow-y:scroll;
 }
 
 .list_title{
