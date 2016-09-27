@@ -34,10 +34,11 @@ var save_song = function()
   if (check_name_input())
   {
     disable_buttons();
+    var bpm = parseInt(controls.bpm);
     var user_id = document.querySelector('.user_id').getAttribute('user');
     var name = controls.name_input.val();
     console.log(name);
-    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.data)};
+    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.data), bpm: bpm};
     console.log("SAVE SONG", data);
     ajax_this('/songs', 'POST', data, success, error_function)
   } else
@@ -73,7 +74,7 @@ var load_clip = function(e, clip, canvas)
 
     //loadInstrument(instrument);
     enable_buttons();
-    if (controls.editing == true)
+    if (controls.editing == true && !on_song_page())
     {
       controls.name_input.val(data.name);
     }
@@ -92,6 +93,7 @@ var load_song = function(e)
   function success(data)
   {
     stop();
+    setBPM(data.bpm);
     console.log("SONG LOADED", data);
     var load_song = JSON.parse(data.song_data);
     session.song_data = data;
@@ -104,6 +106,7 @@ var load_song = function(e)
 var update_clip = function()
 {
   disable_buttons();
+
   var clip_id = session.editor_data.id;
   var user_id = session.editor_data.user_id;
   var name = controls.name_input.val();
@@ -125,8 +128,8 @@ var update_song = function()
   var song_id = session.song_data.id;
   var user_id = session.song_data.user_id;
   var name = controls.name_input.val();
-
-  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument)};
+  var bpm = parseInt(controls.bpm);
+  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument), bpm: bpm};
   session.song_data = data;
   console.log("UPDATE SONG", data);
 
@@ -167,4 +170,12 @@ function check_name_length(parsed)
 
     return true;
   }
+}
+
+function setBPM(bpm)
+{
+  controls.bpm = bpm;
+  controls.bpm_slider.val(bpm);
+  $('#bpm_label').text(String(bpm))
+  controls.millisecond_conversion = ((-1.56 * controls.bpm) + 343.6);
 }

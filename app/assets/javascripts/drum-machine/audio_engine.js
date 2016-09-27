@@ -103,23 +103,23 @@ function Instruments(instr_array, selection)
                createTrack("gold", b.clap1_play),
                createTrack("gold", b.snare1_play),
                createTrack("dodgerblue", b.kick1_play)];
-  this.synth_1 = [createTrack("gold", note(audio, 880)),
-               createTrack("gold", note(audio, 659)),
-               createTrack("gold", note(audio, 587)),
-               createTrack("gold", note(audio, 523)),
-               createTrack("gold", note(audio, 440)),
+  this.synth_1 = [createTrack("gold", square_wave(audio, 880, 4)),
+               createTrack("gold", square_wave(audio, 659, 4)),
+               createTrack("gold", square_wave(audio, 587, 4)),
+               createTrack("gold", square_wave(audio, 523, 4)),
+               createTrack("gold", square_wave(audio, 440, 4)),
                createTrack("dodgerblue", kick(audio))]
-  this.synth_2 = [createTrack("gold", note(audio, 880)),
-               createTrack("gold", note(audio, 659)),
-               createTrack("gold", note(audio, 587)),
-               createTrack("gold", note(audio, 523)),
-               createTrack("gold", note(audio, 440)),
+  this.synth_2 = [createTrack("gold", sawtooth_wave(audio, 880, 4)),
+               createTrack("gold", sawtooth_wave(audio, 659, 4)),
+               createTrack("gold", sawtooth_wave(audio, 587, 4)),
+               createTrack("gold", sawtooth_wave(audio, 523, 4)),
+               createTrack("gold", sawtooth_wave(audio, 440, 4)),
                createTrack("dodgerblue", kick(audio))]
-  this.synth_3 = [createTrack("gold", note(audio, 880)),
-               createTrack("gold", note(audio, 659)),
-               createTrack("gold", note(audio, 587)),
-               createTrack("gold", note(audio, 523)),
-               createTrack("gold", note(audio, 440)),
+  this.synth_3 = [createTrack("gold", sine_wave(audio, 880, 4)),
+               createTrack("gold", sine_wave(audio, 659, 4)),
+               createTrack("gold", sine_wave(audio, 587, 4)),
+               createTrack("gold", sine_wave(audio, 523, 4)),
+               createTrack("gold", sine_wave(audio, 440, 4)),
                createTrack("dodgerblue", kick(audio))]
   this.custom_kit = [createTrack("gold", b[instr_array[0]]),
                createTrack("gold", b[instr_array[1]]),
@@ -128,39 +128,41 @@ function Instruments(instr_array, selection)
                createTrack("gold", b[instr_array[4]]),
                createTrack("dodgerblue", b[instr_array[5]])]
   this.current_instrument = this[selection];
-  this.sine_wave = function(audio, frequency, duration)
-  {
-    return function()
-    {
-      var duration = 1;
-      var sineWave = createSineWave(audio, duration);
-      sineWave.frequency.value = frequency;
-      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
-    };
-  };
 
-  this.sawtooth_wave = function(audio, frequency, duration)
-  {
-    return function()
-    {
-      var duration = 1;
-      var sineWave = createSineWave(audio, duration);
-      sineWave.frequency.value = frequency;
-      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
-    };
-  };
-  this.square_wave = function(audio, frequency, duration)
-  {
-    return function()
-    {
-      var duration = 1;
-      var sineWave = createSineWave(audio, duration);
-      sineWave.frequency.value = frequency;
-      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
-    };
-  };
 
 }
+
+sine_wave = function(audio, frequency, duration)
+  {
+    return function()
+    {
+      var duration = 1;
+      var sineWave = createSineWave(audio, duration);
+      sineWave.frequency.value = frequency;
+      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
+    };
+  };
+
+  sawtooth_wave = function(audio, frequency, duration)
+  {
+    return function()
+    {
+      var duration = 1;
+      var sineWave = createSawtoothWave(audio, duration);
+      sineWave.frequency.value = frequency;
+      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
+    };
+  };
+  square_wave = function(audio, frequency, duration)
+  {
+    return function()
+    {
+      var duration = 1;
+      var sineWave = createSquareWave(audio, duration);
+      sineWave.frequency.value = frequency;
+      chain([sineWave, createAmplifier(audio, 0.2, duration), audio.destination]);
+    };
+  };
 
   // Update
   // ------
@@ -315,6 +317,26 @@ function Instruments(instr_array, selection)
     // Make the oscillator a sine wave.  Different types of wave produce
     // different characters of sound.  A sine wave produces a pure tone.
     oscillator.type = "sine";
+
+    // Start the sine wave playing right now.
+    oscillator.start(audio.currentTime);
+
+    // Tell the sine wave to stop playing after `duration` seconds have
+    // passed.
+    oscillator.stop(audio.currentTime + duration);
+
+    // Return the sine wave.
+    return oscillator;
+  };
+
+  function createSawtoothWave(audio, duration) {
+
+    // Create an oscillating sound wave.
+    var oscillator = audio.createOscillator();
+
+    // Make the oscillator a sine wave.  Different types of wave produce
+    // different characters of sound.  A sine wave produces a pure tone.
+    oscillator.type = "sawtooth";
 
     // Start the sine wave playing right now.
     oscillator.start(audio.currentTime);

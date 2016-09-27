@@ -250,7 +250,7 @@ function Tracker(width, track_number)
 function loadPattern(pattern, canvas, instrument_data)
 {
   //Draws pattern onto the canvas
-  console.log("PATTERN", pattern, canvas, instrument_data)
+  //console.log("PATTERN", pattern, canvas, instrument_data)
   clearKit(canvas);
 
   //row = data.tracks
@@ -330,7 +330,7 @@ function addClip(width)
   for (var i = 0; i < 4; i++)
   {
     var instr_assignments = assign_instruments(instr_list[i])
-    console.log("ASSIGNMENTS", instr_assignments)
+    //console.log("ASSIGNMENTS", instr_assignments)
     var instr = new Instruments(instr_assignments, instr_list[i]); //pass an array of string instr values
     //console.log(instr[instr_list[i]])
 

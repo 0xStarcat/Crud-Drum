@@ -29,6 +29,10 @@ function Control_listeners()
   this.name_error = $('#name_error');
   this.selection_boxes = $('select');
   this.selection_boxes.on('change', selection);
+  this.bpm_slider = $('#bpm_display');
+  this.bpm_slider.on('input change', bpm_adjust);
+  this.bpm = 120;
+  this.millisecond_conversion = 125;
   this.mount;
   this.mount_listener;
   this.mount_target;
@@ -121,7 +125,12 @@ var unmount_cursor = function(e)
   if (clip)
   {
     load_clip(e, controls.mount, clip)
-    controls.editing = true;
+
+    if (!on_song_page())
+    {
+      controls.editing = true;
+    }
+
   }
 
   controls.mount = undefined;
@@ -257,11 +266,12 @@ function play()
 {
   if (on_song_page())
   {
-    song.pattern_tracker = setInterval(song.track, 100);
+    song.pattern_tracker = setInterval(song.track, controls.millisecond_conversion);
   }
   else if (!on_song_page())
   {
-    song.editor_tracker = setInterval(song.editor_track, 100);
+
+    song.editor_tracker = setInterval(song.editor_track, controls.millisecond_conversion);
   }
 
   toggle_playback_buttons();
@@ -392,5 +402,26 @@ function selection(e)
   var index = $(e.target).closest('select').attr('index');
   stop();
   change_track_instrument(clip_editor, index, value);
+}
+
+
+function bpm_adjust(e)
+{
+  controls.bpm = controls.bpm_slider.val();
+  $('#bpm_label').text(String(controls.bpm))
+  controls.bpm_slider.html(String(controls.bpm))
+  clearInterval(song.pattern_tracker);
+  clearInterval(song.editor_tracker);
+  controls.millisecond_conversion = ((-1.56 * controls.bpm) + 343.6);
+  if (on_song_page())
+  {
+    song.pattern_tracker = setInterval(song.track, controls.millisecond_conversion);
+  } else
+  {
+    song.editor_tracker = setInterval(song.editor_track, controls.millisecond_conversion);
+  }
+
+
+  console.log(controls.bpm, controls.millisecond_conversion);
 }
 

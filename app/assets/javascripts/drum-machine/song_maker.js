@@ -25,50 +25,53 @@ function Song()
     //Handle tracking for entire song
     if (self.tracker_segments.length > 0 )
     {
+      self.clips[self.current_segment].forEach(function(segment)
+      {
+        segment.data.tracks
+        .filter(function(track) {  return track.steps[segment.data.step]; })
+        .forEach(function(track)
+          {
+            track.playSound();
+          });
+        })
+      };
+
       // Increase `data.step` by one for current clip.  If `data.step` is `15` (the last
       // step), move to next clip reset step value to 0
-        self.tracker_segments[self.current_segment].data.step = (self.tracker_segments[self.current_segment].data.step + 1);
+        self.tracker_segments[self.current_segment].data.step = (self.tracker_segments[self.current_segment].data.step + 1) % 16;
         self.clips[self.current_segment].forEach(function(segment)
           {
             //Move the tracker to right
-            segment.data.step = (segment.data.step + 1)
+            segment.data.step = (segment.data.step + 1) % 16;
           });
 
-      if (self.tracker_segments[self.current_segment].data.step == 16)
+      if (self.tracker_segments[self.current_segment].data.step == 0)
       {
 
-        self.clips[self.current_segment].forEach(function(segment)
-        {
-          //Move the reset tracker position to 0
-          segment.data.step = 0;
+        // self.clips[self.current_segment].forEach(function(segment)
+        // {
+        //   //Move the reset tracker position to 0
+        //   segment.data.step = 0;
 
-        });
-        self.tracker_segments[self.current_segment].data.step = 0;
+        // });
+        // self.tracker_segments[self.current_segment].data.step = 0;
         //change which canvas is rendering
         self.current_segment = (self.current_segment + 1) % self.clips.length;
       }
 
       // Find all the tracks where the current step is on.  Play the
       // sounds for those tracks.
-      self.clips[self.current_segment].forEach(function(segment)
-      {
-      segment.data.tracks
-      .filter(function(track) {  return track.steps[segment.data.step]; })
-      .forEach(function(track)
-        {
-          track.playSound();
-        });
-      })
-    };
+
   }
   this.editor_track = function(){
-    clip_editor.data.step = (clip_editor.data.step + 1) % 16;
+
     clip_editor.data.tracks
       .filter(function(track) {  return track.steps[clip_editor.data.step]; })
       .forEach(function(track)
         {
           track.playSound();
         });
+    clip_editor.data.step = (clip_editor.data.step + 1) % clip_editor.data.tracks[0].steps.length;
   }
   //move these trackers to the pattern
   //and clear the trackers in the stop function
