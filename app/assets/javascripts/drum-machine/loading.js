@@ -61,7 +61,7 @@ function load_samples(index)
     instr = new Instruments(undefined, "drum_kit", 3);
     song = new Song();
     insert_segment();
-    clip_editor = new Pattern(large_screen, -1, instr, 0);
+    clip_editor = new Pattern(large_screen, -1, instr, -1);
     enable_buttons();
 
    // test();

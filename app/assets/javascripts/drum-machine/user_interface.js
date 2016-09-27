@@ -243,7 +243,7 @@ function stop(e)
 {
 
   clearInterval(song.pattern_tracker)
-
+  song.master_step = 0;
   song.clips.forEach(function(segment)
     {
       segment.forEach(function(clip)
@@ -260,6 +260,7 @@ function stop(e)
   song.current_segment = 0;
 
   clearInterval(song.editor_tracker);
+  song.editor_step = 0;
   reset_tracker(clip_editor);
   if ($(controls.stop_button).is(':visible'))
   {

@@ -104,7 +104,7 @@ function Pattern(width, track_number, instrument, segment_number){
 
   });
 };
-  this.draw = function(segment_number) {
+  this.draw = function(track_number) {
 
     // Clear away the previous drawing.
     self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
@@ -114,10 +114,13 @@ function Pattern(width, track_number, instrument, segment_number){
     drawTracks(self.screen, self.data, self.BUTTON_SIZE, self.segment_number)
 
     // Draw the pink square that indicates the current step (beat).
+    if (track_number < 0)
+    {
 
-      drawButton(self.screen, self.data.step, self.data.tracks[0], "deeppink", self.BUTTON_SIZE, self.segment_number);
+      drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE, self.segment_number);
+    }
 
-    // if (song.current_segment == track_number)
+    // if (song.current_segment == segment_number)
     // {
     //   drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
     // }
@@ -144,7 +147,7 @@ function Pattern(width, track_number, instrument, segment_number){
     self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
     self.setupButtonClicking();
 
-    self.draw(self.segment_number);
+    self.draw();
   })(width, track_number)
 }
 
@@ -171,28 +174,28 @@ function createTrack(color, playSound) {
 
   // **drawButton()** draws a button in `color` at `column` and `row`.
   function drawButton(screen, column, row, color, BUTTON_SIZE, segment_number) {
-    var position = buttonPosition(column, row, BUTTON_SIZE);
-
-    if (song.master_step != column || song.current_segment != segment_number)
-    {
-      screen.fillStyle = color;
-    } else if (song.master_step == column && song.current_segment == segment_number)
-    {
-      //console.log(track_number)
-      screen.fillStyle = 'deeppink';
-    } else {
-      screen.fillStyle = color;
-    }
-
-    if (song.editor_step != column)
-    {
-       screen.fillStyle = color;
-    } else {
-      screen.fillStyle = 'deeppink';
-    }
 
 
-    screen.fillRect(position.x, position.y, BUTTON_SIZE, BUTTON_SIZE);
+
+      var position = buttonPosition(column, row, BUTTON_SIZE);
+
+
+     if (song.master_step != column || song.current_segment != segment_number)
+      {
+        screen.fillStyle = color;
+      } else if (song.master_step == column && song.current_segment == segment_number)
+      {
+
+        screen.fillStyle = 'deeppink';
+      } else {
+        screen.fillStyle = color;
+      }
+      screen.fillRect(position.x, position.y, BUTTON_SIZE, BUTTON_SIZE);
+
+
+
+
+
 
   };
 
@@ -265,10 +268,10 @@ function Tracker(width, track_number)
     //drawTracks(self.screen, self.data, self.BUTTON_SIZE)
 
     // Draw the pink square that indicates the current step (beat).
-    if (song.current_segment == track_number)
-    {
-      drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
-    }
+    // if (song.current_segment == track_number)
+    // {
+    //   drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
+    // }
 
     // Ask the browser to call `draw()` again in the near future.
     requestAnimationFrame(self.draw);
@@ -279,7 +282,7 @@ function Tracker(width, track_number)
     var screen_id = $('<canvas class="tracking" segment = "'+track_number+'" id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
     $('#tracking_container').append(screen_id);
     self.screen = document.querySelector('#'+self.id).getContext("2d");
-    self.draw();
+    //self.draw();
     self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
 
   })(width, track_number)
