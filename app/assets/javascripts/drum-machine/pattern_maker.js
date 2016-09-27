@@ -104,7 +104,7 @@ function Pattern(width, track_number, instrument, segment_number){
 
   });
 };
-  this.draw = function(track_number) {
+  this.draw = function(segment_number) {
 
     // Clear away the previous drawing.
     self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
