@@ -57,7 +57,6 @@ function Pattern(width, track_number, instrument){
             {
               track.steps[column] = !on;
               self.pattern.push({step: column, track: row})
-              console.log(track.steps[column])
             }
           }
         });
@@ -90,7 +89,6 @@ function Pattern(width, track_number, instrument){
               {
 
                 self.pattern.push({step: column, track: row})
-                console.log(self.pattern.includes(check))
               }
             }
             else
@@ -185,7 +183,20 @@ function createTrack(color, playSound) {
                      row,
                      on ? track.color : 'rgba(66,185,66,1)',
                      BUTTON_SIZE);
-        } else {
+
+        } else if (row == 4 && column % 4 != 0) {
+          drawButton(screen,
+                     column,
+                     row,
+                     on ? track.color : 'rgba(188,220,188,1)',
+                     BUTTON_SIZE);
+        } else if (row == 3 && column % 4 != 0) {
+          drawButton(screen,
+                     column,
+                     row,
+                     on ? track.color : 'rgba(158,220,188,1)',
+                     BUTTON_SIZE);
+        }else {
           drawButton(screen,
                      column,
                      row,
@@ -309,7 +320,6 @@ function reconstruct_instrument(canvas, instrument_data, mult)
 
     // var default_instr = instrument_data.type
     // var instrument_tracks = instr[default_instr]
-    console.log(instrument_data, instr[instrument_data.type]);
     instrument_data.tracks = instrument_tracks;
     loadInstrument(canvas, instrument_data)
     break
@@ -318,7 +328,6 @@ function reconstruct_instrument(canvas, instrument_data, mult)
 
 function loadInstrument(canvas, instrument_data)
 {
-  console.log(instrument_data);
   canvas.data = instrument_data;
 }
 
@@ -345,7 +354,6 @@ var insert_segment = function(e)
 
 function addClip(width)
 {
-  console.log('add')
   var instr_list = song.instrument_tracks;
 
   var segment = [];

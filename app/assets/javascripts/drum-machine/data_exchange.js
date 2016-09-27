@@ -177,8 +177,6 @@ function check_name_length(parsed)
 
 function set_instrument_tracks(instrument_tracks)
 {
-  console.log(instrument_tracks);
-  debugger
 
   instrument_tracks.forEach(function(track, index)
   {

@@ -160,6 +160,23 @@ function Instruments(instr_array, selection, f_multi)
 
     };
   };
+  this.thick_square = function(audio, frequency, duration)
+  {
+    return function()
+    {
+      var amplifier = audio.createGain();
+          amplifier.gain.value = 0.2;
+
+      var square_wave = createSineWave(audio, duration);
+      var square_wave2 = createSquareWave(audio, duration);
+      square_wave.frequency.value = frequency*2;
+      square_wave.detune.value = -6;
+      square_wave2.frequency.value = frequency/2;
+      chain([square_wave, createAmplifier(audio, 0.2, duration), audio.destination]);
+      chain([square_wave2, createAmplifier(audio, 0.2, duration), audio.destination]);
+
+    };
+  };
   this.c2_minor = [65.41, 73.42, 77.78, 87.31, 98.00, 103.83, 116.54, 130.81]
   this.c3_minor = [130.81, 146.83, 155.56, 174.61, 196.00, 207.65, 233.08, 261.63]
   this.f_multi = f_multi;
@@ -226,6 +243,14 @@ function Instruments(instr_array, selection, f_multi)
                createTrack("gold", this.chill_wave(audio, this.c2_minor[2]*this.f_multi, this.short_duration)),
                createTrack("gold", this.chill_wave(audio, this.c2_minor[1]*this.f_multi, this.short_duration)),
                createTrack("gold", this.chill_wave(audio, this.c2_minor[0]*this.f_multi, this.short_duration))]
+  this.thick_square = [createTrack("gold", this.thick_square(audio, this.c2_minor[7]*this.f_multi, this.short_duration)),
+              createTrack("gold", this.thick_square(audio, this.c2_minor[6]*this.f_multi, this.short_duration)),
+              createTrack("gold", this.thick_square(audio, this.c2_minor[5]*this.f_multi, this.short_duration)),
+               createTrack("gold", this.thick_square(audio, this.c2_minor[4]*this.f_multi, this.short_duration)),
+               createTrack("gold", this.thick_square(audio, this.c2_minor[3]*this.f_multi, this.short_duration)),
+               createTrack("gold", this.thick_square(audio, this.c2_minor[2]*this.f_multi, this.short_duration)),
+               createTrack("gold", this.thick_square(audio, this.c2_minor[1]*this.f_multi, this.short_duration)),
+               createTrack("gold", this.thick_square(audio, this.c2_minor[0]*this.f_multi, this.short_duration))]
   this.custom_kit = [createTrack("gold", b[instr_array[0]]),
                createTrack("gold", b[instr_array[1]]),
                createTrack("gold", b[instr_array[2]]),
