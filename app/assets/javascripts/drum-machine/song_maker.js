@@ -15,7 +15,7 @@ function Song()
   this.tracker_segments = [];
   this.current_segment = 0;
   this.track_length = 0;
-  this.isPlaying = true;
+  this.isPlaying = false;
   this.editing = false;
   this.editing_segment = 0;
   this.editing_clip = 0;

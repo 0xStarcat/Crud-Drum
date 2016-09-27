@@ -42,6 +42,19 @@ function Control_listeners()
   this.mount_target;
   this.mount_destination;
   this.editing = false;
+  $(document).on('keypress', function(e)
+  {
+    if (e.which == 32)
+    {
+
+      if (song.isPlaying)
+      {
+        $('.stop_button').trigger('click');
+      } else {
+        $('.play_button').trigger('click');
+      }
+    }
+  });
 };
 
 function Canvas_Listeners()
@@ -241,7 +254,7 @@ function save()
 
 function stop(e)
 {
-
+  song.isPlaying=false;
   clearInterval(song.pattern_tracker)
   song.master_step = 0;
   song.clips.forEach(function(segment)
@@ -280,7 +293,7 @@ function play()
 
     song.editor_tracker = setInterval(song.editor_track, controls.millisecond_conversion);
   }
-
+  song.isPlaying = true;
   toggle_playback_buttons();
 }
 

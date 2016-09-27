@@ -136,7 +136,8 @@ function Pattern(width, track_number, instrument, segment_number){
     var clip_id = (track_number >= 0) ? track_number : "editor";
     //var screen_container = $('<div><label for='+self.id+'>'+(song.clips.length+1)+'</label></div>')
     //$('#track_'+track_number+'_container').append(screen_container);
-    var screen_id = $('<canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.5)+'px"></canvas>');//document.querySelector("#screen")
+    var label_visible = (track_number == 3) ? "inline" : "none";
+    var screen_id = $('<div><canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.5)+'px"></canvas><label class="song_label" style="left:'+(width*segment_id)+'px; display:'+label_visible+'"for='+self.id+'>'+(song.clips.length+1)+'</label></div>');//document.querySelector("#screen")
     $('#track_'+track_number+'_container').append(screen_id);
     //$(screen_container).append(screen_id);
     if (track_number < 0)
@@ -183,7 +184,7 @@ function createTrack(color, playSound) {
      if (song.master_step != column || song.current_segment != segment_number)
       {
         screen.fillStyle = color;
-      } else if (song.master_step == column && song.current_segment == segment_number)
+      } else if (song.master_step == column && song.current_segment == segment_number && song.isPlaying)
       {
 
         screen.fillStyle = 'deeppink';
