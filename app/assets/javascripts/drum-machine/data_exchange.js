@@ -37,8 +37,7 @@ var save_song = function()
     var bpm = parseInt(controls.bpm);
     var user_id = document.querySelector('.user_id').getAttribute('user');
     var name = controls.name_input.val();
-    console.log(name);
-    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.data), bpm: bpm};
+    var data = {user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.data), bpm: bpm, instrument_tracks: JSON.stringify(song.instrument_tracks)};
     console.log("SAVE SONG", data);
     ajax_this('/songs', 'POST', data, success, error_function)
   } else
@@ -92,13 +91,15 @@ var load_song = function(e)
   ajax_this('/song_req', 'GET', {id: id}, success, error_function)
   function success(data)
   {
-    //stop();
+    stop();
     setBPM(data.bpm);
     console.log("SONG LOADED", data);
     var load_song = JSON.parse(data.song_data);
+    var instrument_tracks = JSON.parse(data.instrument_tracks)
     session.song_data = data;
     render_song(load_song);
     enable_buttons();
+    set_instrument_tracks(instrument_tracks);
     if (on_song_page)
     {
       controls.name_input.val(data.name);
@@ -133,7 +134,7 @@ var update_song = function()
   var user_id = session.song_data.user_id;
   var name = controls.name_input.val();
   var bpm = parseInt(controls.bpm);
-  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument), bpm: bpm};
+  var data = {id: parseInt(song_id), user_id: parseInt(user_id), name: name, data: JSON.stringify(song.clips), instrument: JSON.stringify(clip_editor.instrument), bpm: bpm, instrument_tracks: JSON.stringify(song.instrument_tracks)};
   session.song_data = data;
   console.log("UPDATE SONG", data);
 
@@ -149,9 +150,7 @@ var update_song = function()
 function check_name_input()
 {
   var reg = /\s/ig; //reg ex, all whitespace
-  console.log(controls.name_input.val())
   var parsed = controls.name_input.val().replace(reg, "");
-  console.log(parsed);
   if (parsed == "" )
   {
     controls.name_error.text('Please enter a valid name');
@@ -174,6 +173,29 @@ function check_name_length(parsed)
 
     return true;
   }
+}
+
+function set_instrument_tracks(instrument_tracks)
+{
+  console.log(instrument_tracks);
+  debugger
+
+  instrument_tracks.forEach(function(track, index)
+  {
+    $('.synth_pick').eq(index).val(track.wave);
+    $('.octave_pick').eq(index).val(track.mult);
+  })
+
+
+
+  $('.synth_pick').each(function(box)
+    {
+      $(this).trigger('change');
+    });
+  $('.octave_pick').each(function(box)
+    {
+      $(this).trigger('change');
+    });
 }
 
 function setBPM(bpm)

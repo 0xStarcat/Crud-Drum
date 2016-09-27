@@ -60,10 +60,11 @@ class SongsController < ApplicationController
         song_data: params[:data],
         name: params[:name],
         instrument: params[:instrument],
-        bpm: params[:bpm]
+        bpm: params[:bpm],
+        instrument_tracks: params[:instrument_tracks]
       }
     })
-    params.require(:song).permit(:song_data, :user_id, :name, :instrument, :bpm)
+    params.require(:song).permit(:song_data, :user_id, :name, :instrument, :bpm, :instrument_tracks)
 
   end
 

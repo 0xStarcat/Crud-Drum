@@ -10,8 +10,8 @@ function Control_listeners()
 {
   self = this;
   this.mouse_down;
-  $(window).on('mousedown', toggle_mouse);
-  $(window).on('mouseup', toggle_mouse);
+  $(window).on('mousedown', mouse_down);
+  $(window).on('mouseup', mouse_up);
   this.save_button = $('.save_button');
   this.save_button.on('click', save);
   this.stop_button = $('.stop_button');
@@ -29,6 +29,10 @@ function Control_listeners()
   this.name_error = $('#name_error');
   this.selection_boxes = $('select');
   this.selection_boxes.on('change', selection);
+  this.synth_boxes = $('.synth_pick');
+  this.synth_boxes.on('change', synth_selection);
+  this.octave_boxes = $('.octave_pick');
+  this.octave_boxes.on('change', octave_selection);
   this.bpm_slider = $('#bpm_display');
   this.bpm_slider.on('input change', bpm_adjust);
   this.bpm = 120;
@@ -306,20 +310,17 @@ var switch_playback = function()
 
 }
 
-var insert_segment = function(e)
+
+
+
+function mouse_down(e)
 {
-  var small_screen = 300;
-  var large_screen = 687;
-  addClip(small_screen);
-
-
+  controls.mouse_down = true;
 }
 
-
-function toggle_mouse(e)
+function mouse_up(e)
 {
-  if (!controls.mouse_down) {controls.mouse_down = true}
-  else if (controls.mouse_down){controls.mouse_down = false}
+  controls.mouse_down = false;
 }
 
 function expand_clip(id)
@@ -404,6 +405,43 @@ function selection(e)
   var index = $(e.target).closest('select').attr('index');
   //stop();
   change_track_instrument(clip_editor, index, value);
+}
+
+function synth_selection(e)
+{
+  var value = $(e.target).closest('select').val();
+  var index = $(e.target).closest('select').attr('index');
+  //stop();
+
+  song.instrument_tracks[index]["wave"] = value;
+  for (var i=0;i<song.clips.length;i++)
+  {
+    for (var j = index; j < song.clips[i].length; j+=4)
+    {
+      console.log(j,i)
+      change_synth_track(song.clips[i][j], value, song.clips[i][j].data.mult);
+
+    }
+  }
+}
+
+function octave_selection(e)
+{
+  var mult = $(e.target).closest('select').val();
+  var index = $(e.target).closest('select').attr('index');
+
+
+  song.instrument_tracks[index]["mult"] = mult;
+  for (var i=0;i<song.clips.length;i++)
+  {
+    for (var j = index; j < song.clips[i].length; j+=4)
+    {
+
+      var value = song.clips[i][j].data.type;
+
+      change_synth_track(song.clips[i][j], value, mult);
+    }
+  }
 }
 
 

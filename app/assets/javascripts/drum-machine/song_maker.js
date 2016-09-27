@@ -19,6 +19,7 @@ function Song()
   this.editing = false;
   this.editing_segment = 0;
   this.editing_clip = 0;
+  this.instrument_tracks = [{"wave": "simple_sine", "mult": 3}, {"wave": "simple_sawtooth", "mult": 3}, {"wave": "simple_square", "mult": 3}, {"wave": "drum_kit", "mult": 3}];
   this.track = function()
   {
 

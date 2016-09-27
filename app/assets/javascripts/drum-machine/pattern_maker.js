@@ -27,6 +27,7 @@ function Pattern(width, track_number, instrument){
     // has a sound and sixteen steps (or beats).
     tracks: instrument.current_instrument,
     type: instrument.type,
+    mult: instrument.f_multi,
     instr_tags: instrument.instr_tags
   };
 
@@ -129,7 +130,7 @@ function Pattern(width, track_number, instrument){
     var clip_id = (track_number >= 0) ? track_number : "editor";
     //var screen_container = $('<div><label for='+self.id+'>'+(song.clips.length+1)+'</label></div>')
     //$('#track_'+track_number+'_container').append(screen_container);
-    var screen_id = $('<canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
+    var screen_id = $('<canvas class="song_canvas" segment="'+segment_id+'" clip="'+clip_id+'" id='+self.id+' width="'+width+'px" height="'+(width*0.5)+'px"></canvas>');//document.querySelector("#screen")
     $('#track_'+track_number+'_container').append(screen_id);
     //$(screen_container).append(screen_id);
     if (track_number < 0)
@@ -182,7 +183,7 @@ function createTrack(color, playSound) {
           drawButton(screen,
                      column,
                      row,
-                     on ? track.color : 'rgba(235,185,185,1)',
+                     on ? track.color : 'rgba(66,185,66,1)',
                      BUTTON_SIZE);
         } else {
           drawButton(screen,
@@ -274,25 +275,40 @@ function change_track_instrument(canvas,index,value)
 {
 
   canvas.data.instr_tags.splice(index, 1, value);
-  canvas.data.step = 0;
+  //canvas.data.step = 0;
   canvas.data.type = "custom_kit";
   session.editor_data = canvas.data;
   reconstruct_instrument(canvas, canvas.data);
-  loadPattern(clip_editor.pattern, canvas, undefined)
+  loadPattern(canvas.pattern, canvas, undefined)
 }
 
-function reconstruct_instrument(canvas, instrument_data)
+function change_synth_track(canvas, value, mult)
+{
+
+  canvas.data.type = value;
+  canvas.data.mult = mult;
+
+  reconstruct_instrument(canvas, canvas.data, mult);
+  loadPattern(canvas.pattern, canvas, undefined)
+}
+
+function reconstruct_instrument(canvas, instrument_data, mult)
 {
   //Javascript function variables don't getp assed to database
   //so need to reconstruct the instrument array if a custom instrument was made
+
   switch (instrument_data.type){
     case "custom_kit":
-      var new_instr = new Instruments(instrument_data.instr_tags, instrument_data.type)
+      var new_instr = new Instruments(instrument_data.instr_tags, instrument_data.type, instrument_data.mult)
       canvas.data.tracks = new_instr.current_instrument
     break
     default:
-    var default_instr = instrument_data.type
-    var instrument_tracks = instr[default_instr]
+    var new_instr = new Instruments(instrument_data.instr_tags, instrument_data.type, instrument_data.mult)
+    var default_instr = new_instr.type
+    var instrument_tracks = new_instr[default_instr]
+
+    // var default_instr = instrument_data.type
+    // var instrument_tracks = instr[default_instr]
     console.log(instrument_data, instr[instrument_data.type]);
     instrument_data.tracks = instrument_tracks;
     loadInstrument(canvas, instrument_data)
@@ -319,19 +335,27 @@ function clearKit(clip)
     }
   }
 }
+var insert_segment = function(e)
+{
+  var small_screen = 300;
+  var large_screen = 687;
+  addClip(small_screen);
 
+}
 
 function addClip(width)
 {
-
-  var instr_list = ["synth_1", "synth_2", "synth_3", "drum_kit"];
+  console.log('add')
+  var instr_list = song.instrument_tracks;
 
   var segment = [];
   for (var i = 0; i < 4; i++)
   {
-    var instr_assignments = assign_instruments(instr_list[i])
+
+    var instr_assignments = assign_instruments(instr_list[i].wave)
     //console.log("ASSIGNMENTS", instr_assignments)
-    var instr = new Instruments(instr_assignments, instr_list[i]); //pass an array of string instr values
+
+    var instr = new Instruments(instr_assignments, instr_list[i]["wave"], instr_list[i]["mult"]); //pass an array of string instr values
     //console.log(instr[instr_list[i]])
 
     var new_clip = new Pattern(width, i, instr);

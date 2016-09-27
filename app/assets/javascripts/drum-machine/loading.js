@@ -58,7 +58,7 @@ function load_samples(index)
   function samples_loaded()
   {
     var large_screen = 687;
-    instr = new Instruments(undefined, "drum_kit");
+    instr = new Instruments(undefined, "drum_kit", 3);
     song = new Song();
     insert_segment();
     clip_editor = new Pattern(large_screen, -1, instr);
