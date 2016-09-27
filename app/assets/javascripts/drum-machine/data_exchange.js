@@ -66,7 +66,7 @@ var load_clip = function(e, clip, canvas)
     console.log("CLIP LOADED FROM SERVER", data);
     var pattern = JSON.parse(data.coords);
     var instrument = JSON.parse(data.instrument);
-    var instrument_data = {step: instrument.step, tracks: instrument.tracks, type: instrument.type}
+    var instrument_data = {step: instrument.step, tracks: instrument.tracks, type: instrument.type, instr_tags: instrument.instr_tags}
 
     session.editor_data = data;
     loadPattern(pattern, canvas, instrument_data);
@@ -92,14 +92,18 @@ var load_song = function(e)
   ajax_this('/song_req', 'GET', {id: id}, success, error_function)
   function success(data)
   {
-    stop();
+    //stop();
     setBPM(data.bpm);
     console.log("SONG LOADED", data);
     var load_song = JSON.parse(data.song_data);
     session.song_data = data;
     render_song(load_song);
     enable_buttons();
-    controls.name_input.val(data.name);
+    if (on_song_page)
+    {
+      controls.name_input.val(data.name);
+    }
+
   }
 }
 
@@ -177,5 +181,5 @@ function setBPM(bpm)
   controls.bpm = bpm;
   controls.bpm_slider.val(bpm);
   $('#bpm_label').text(String(bpm))
-  controls.millisecond_conversion = ((-1.56 * controls.bpm) + 343.6);
+  controls.millisecond_conversion = ((60/controls.bpm)/4)*1000//((-1.56 * controls.bpm) + 343.6);
 }

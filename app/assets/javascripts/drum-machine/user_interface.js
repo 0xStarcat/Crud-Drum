@@ -37,7 +37,7 @@ function Control_listeners()
   this.mount_listener;
   this.mount_target;
   this.mount_destination;
-  this.editing;
+  this.editing = false;
 };
 
 function Canvas_Listeners()
@@ -103,6 +103,7 @@ var mount_cursor = function(e)
     $('body').css({'opacity': '0.6', 'cursor':'copy'})
     $('canvas').off('mouseup', unmount_cursor);
     $('canvas').on('mouseup', unmount_cursor);
+    $(window).on('mouseup', unmount_cursor);
     var id = ($(e.target).attr('clip') != null) ? $(e.target).attr('clip') : $(e.target).parent().attr('clip');
     controls.mount = id;
     add_hover_class();
@@ -137,6 +138,7 @@ var unmount_cursor = function(e)
   controls.mount_target = undefined;
   controls.mount_destination = undefined;
   $('canvas').off('mouseup', unmount_cursor);
+  $(window).off('mouseup', unmount_cursor);
   $('body').css({'opacity': '1','cursor':'initial'})
   remove_hover_class();
 }
@@ -222,7 +224,7 @@ function save()
 
   } else
   {
-    if (session.editor_data)
+    if (controls.editing)
     {
       update_clip();
     }
@@ -400,7 +402,7 @@ function selection(e)
   var value = $(e.target).closest('select').val();
   value = value+'_play';
   var index = $(e.target).closest('select').attr('index');
-  stop();
+  //stop();
   change_track_instrument(clip_editor, index, value);
 }
 
@@ -412,7 +414,7 @@ function bpm_adjust(e)
   controls.bpm_slider.html(String(controls.bpm))
   clearInterval(song.pattern_tracker);
   clearInterval(song.editor_tracker);
-  controls.millisecond_conversion = ((-1.56 * controls.bpm) + 343.6);
+  controls.millisecond_conversion = ((60/controls.bpm)/4)*1000 //((-1.56 * controls.bpm) + 343.6);
   if (on_song_page())
   {
     song.pattern_tracker = setInterval(song.track, controls.millisecond_conversion);
