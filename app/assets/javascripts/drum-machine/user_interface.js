@@ -88,7 +88,7 @@ function Library_Listeners()
           if (!$(e.target).hasClass('delete'))
             {
               var clip = ($(e.target).attr('clip') != null) ? $(e.target).attr('clip') : $(e.target).parent().attr('clip');
-              console.log(clip)
+             // console.log(clip)
               load_clip(e, clip, clip_editor);
               $(e.target).off('mouseout', mount_cursor);
             }
@@ -108,7 +108,7 @@ var prime_cursor = function(e)
 {
   if (!$(e.target).hasClass('delete'))
   {
-    console.log($(e.target))
+   // console.log($(e.target))
     $(e.target).on('mouseout', mount_cursor);
   }
 
@@ -191,7 +191,7 @@ var check_screen = function()
 
 function check_instrument_type(instrument_data)
 {
-  console.log("CHECK INSTRUMENT",instrument_data.type)
+  //console.log("CHECK INSTRUMENT",instrument_data.type)
   if (instrument_data.type == "drum_kit" || instrument_data.type == "custom_kit")
   {
     $('.drum_sample_pick').show();
@@ -432,7 +432,7 @@ function synth_selection(e)
   {
     for (var j = index; j < song.clips[i].length; j+=4)
     {
-      console.log(j,i)
+      //console.log(j,i)
       change_synth_track(song.clips[i][j], value, song.clips[i][j].data.mult);
 
     }

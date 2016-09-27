@@ -181,10 +181,7 @@ function createTrack(color, playSound) {
       var position = buttonPosition(column, row, BUTTON_SIZE);
 
 
-     if (song.master_step != column || song.current_segment != segment_number)
-      {
-        screen.fillStyle = color;
-      } else if (song.master_step == column && song.current_segment == segment_number && song.isPlaying)
+      if (song.master_step == column && song.current_segment == segment_number && song.isPlaying)
       {
 
         screen.fillStyle = 'deeppink';
@@ -192,12 +189,6 @@ function createTrack(color, playSound) {
         screen.fillStyle = color;
       }
       screen.fillRect(position.x, position.y, BUTTON_SIZE, BUTTON_SIZE);
-
-
-
-
-
-
   };
 
   // **drawTracks()** draws the tracks in the drum machine.
@@ -247,47 +238,7 @@ function createTrack(color, playSound) {
   };
 
 
-function Tracker(width, track_number)
-{
-  var self = this;
-  this.id = makeId();
-  this.width = width;
-  this.data = {
-    // `step` represents the current step (or beat) of the loop.
-    step: 0,
 
-    // `tracks` holds the six tracks of the drum machine.  Each track
-    // has a sound and sixteen steps (or beats).
-    tracks: []
-  };
-  this.draw = function() {
-
-    // Clear away the previous drawing.
-    self.screen.clearRect(0, 0, self.screen.canvas.width, self.screen.canvas.height);
-
-    // Draw all the tracks.
-    //drawTracks(self.screen, self.data, self.BUTTON_SIZE)
-
-    // Draw the pink square that indicates the current step (beat).
-    // if (song.current_segment == track_number)
-    // {
-    //   drawButton(self.screen, self.data.step, self.data.tracks.length, "deeppink", self.BUTTON_SIZE);
-    // }
-
-    // Ask the browser to call `draw()` again in the near future.
-    requestAnimationFrame(self.draw);
-  };
-  (this.setUp = function(width, track_number)
-  {
-
-    var screen_id = $('<canvas class="tracking" segment = "'+track_number+'" id='+self.id+' width="'+width+'px" height="'+(width*0.45)+'px"></canvas>');//document.querySelector("#screen")
-    $('#tracking_container').append(screen_id);
-    self.screen = document.querySelector('#'+self.id).getContext("2d");
-    //self.draw();
-    self.BUTTON_SIZE = (self.screen.canvas.width / 16)/ 1.5;
-
-  })(width, track_number)
-}
 function loadPattern(pattern, canvas, instrument_data)
 {
   //Draws pattern onto the canvas
@@ -304,10 +255,8 @@ function loadPattern(pattern, canvas, instrument_data)
   }
   pattern.forEach(function(block)
   {
-
     canvas.data.tracks[block["track"]].steps[block["step"]] = true;
     canvas.pattern.push({step: block["step"], track: block["track"]})
-
   })
 }
 

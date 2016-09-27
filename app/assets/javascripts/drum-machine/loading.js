@@ -1,6 +1,9 @@
 var tracking_control;
 var instr;
 var session;
+var song;
+var clip_editor;
+var b;
 
 $('document').ready(function()
 {
