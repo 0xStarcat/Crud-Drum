@@ -1,9 +1,9 @@
 <% if current_user %>
-  <div id ="user_box">
-    <span id = "welcome"> Welcome <%= current_user.name%></span>
-    <a id = "signout" href ="/signout">Log out!</a>
+  <div class ="user_box">
+    <span class = "welcome"> Welcome <%= current_user.name%></span>
+    <a class = "signout" href ="/signout">Log out!</a>
   </div>
-  <div id ="control_row">
+  <div class ="control_row">
     <label for="edit_name" id ="name_input_label">Title</label>
     <input type = "text" id ="edit_name_input">
     <button class = "switch_button">Switch View</button>
@@ -19,8 +19,8 @@
       <input id="bpm_display" type="range" min="60" max="160" value="120">BPM</input>
     </div>
   </div>
-  <label for="edit_name" id ="name_error" style="color:red"></label>
-  <div id ="app_name">
+  <label for="edit_name" class ="name_error" style="color:red"></label>
+  <div class ="app_name">
     <span>Crud Drum</span>
   </div>
 

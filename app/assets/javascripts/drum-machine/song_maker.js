@@ -22,28 +22,20 @@ function Song()
   self.editor_step = 0;
   this.track = function()
   {
-
-
     //Handle tracking for entire song
     if (self.clips.length > 0 )
     {
-
       self.clips[self.current_segment].forEach(function(segment, index)
       {
         segment.data.tracks
         .filter(function(track) {
-
-          //console.log(track[segment.data.step])
-
           return track.steps[segment.data.step];
         })
         .forEach(function(track)
           {
             console.log(track)
             track.playSound();
-
           });
-
         segment.data.step = (segment.data.step + 1) % 16;
           if (index == 0)
           {
@@ -54,18 +46,11 @@ function Song()
 
       // Increase `data.step` by one for current clip.  If `data.step` is `15` (the last
       // step), move to next clip reset step value to 0
-        //self.tracker_segments[self.current_segment].data.step = (self.tracker_segments[self.current_segment].data.step + 1) % 16;
+      //self.tracker_segments[self.current_segment].data.step = (self.tracker_segments[self.current_segment].data.step + 1) % 16;
        if (self.master_step == 0)
       {
-        //
-
         self.current_segment = (self.current_segment + 1) % self.clips.length;
       }
-
-
-      // Find all the tracks where the current step is on.  Play the
-      // sounds for those tracks.
-
   }
   this.editor_track = function(){
 
