@@ -100,8 +100,11 @@ var load_song = function(e)
     render_song(load_song);
     enable_buttons();
     set_instrument_tracks(instrument_tracks);
-    if (on_song_page)
+    if (on_song_page())
     {
+      controls.name_input.val(data.name);
+    } else if (!on_song_page()) {
+      toggle_view();
       controls.name_input.val(data.name);
     }
 
