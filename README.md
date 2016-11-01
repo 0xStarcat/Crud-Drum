@@ -1,24 +1,20 @@
-# README
+# **Crud Drum - online music sequencer**
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+**Description**
+This is an online music sequencer where users can create drum loops and combine those loops into a song. It expands the drum machine created by Mary Rose Cook (link below) into a fully functional CRUD app. Drum samples are uploaded from the Rails server on page load. Synthesizer patches are provided and constructed from the Web Audio API. 
 
-Things you may want to cover:
+Users can save loops and songs to their profile! 
+Login handled with Spotify and Twitter OAuth.
 
-* Ruby version
+**Tech**
+Rails/Ruby server
+PostgreSQL DB
+Web Audio API
+JavaScript/jQuery
+HTML
+CSS
 
-* System dependencies
+**Resources**
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Mary Rose Cook's Drum Machine
+https://github.com/maryrosecook/drum-machine
